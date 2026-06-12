@@ -10,12 +10,14 @@ import type {
 import { createAnvilClient } from "@gearbox-protocol/sdk/dev";
 import type { Abi } from "abitype";
 import type {
+  Account,
   Address,
   Chain,
   ContractFunctionArgs,
   ContractFunctionName,
   EncodeFunctionDataParameters,
-  PrivateKeyAccount,
+  Hex,
+  LocalAccount,
   PublicClient,
   SimulateContractParameters,
   SimulateContractReturnType,
@@ -60,7 +62,7 @@ export default class Client {
 
   #publicClient?: PublicClient;
 
-  #walletClient?: WalletClient<Transport, Chain, PrivateKeyAccount, undefined>;
+  #walletClient?: WalletClient<Transport, Chain, Account, undefined>;
 
   #testClient?: AnvilClient;
 
@@ -69,8 +71,7 @@ export default class Client {
   #gasFees: { maxFeePerGas?: bigint; maxPriorityFeePerGas?: bigint } = {};
 
   public async launch(): Promise<void> {
-    const { chainId, network, optimistic, privateKey, pollingInterval } =
-      this.config;
+    const { chainId, network, optimistic, pollingInterval } = this.config;
     const chain = defineChain({
       ...chains[network],
       id: chainId,
@@ -81,12 +82,6 @@ export default class Client {
       chain,
       transport: this.transport,
       pollingInterval: optimistic ? 25 : pollingInterval,
-    });
-    this.#walletClient = createWalletClient({
-      account: privateKeyToAccount(privateKey.value),
-      chain,
-      transport: this.transport,
-      pollingInterval: optimistic ? 25 : undefined,
     });
     try {
       const url = this.config.jsonRpcProviders?.[0]?.value;
@@ -104,6 +99,12 @@ export default class Client {
         this.#anvilInfo = await this.#testClient.anvilNodeInfo();
       }
     } catch {}
+    this.#walletClient = createWalletClient({
+      account: await this.#resolveAccount(),
+      chain,
+      transport: this.transport,
+      pollingInterval: optimistic ? 25 : undefined,
+    });
     if (this.#anvilInfo) {
       this.logger.debug(`running on anvil, fork block: ${this.anvilForkBlock}`);
     } else {
@@ -114,6 +115,48 @@ export default class Client {
       this.#gasFees = await this.pub.estimateFeesPerGas();
       this.logger.debug(this.#gasFees, "optimistic gas fees");
     }
+  }
+
+  async #resolveAccount(): Promise<Account> {
+    const { optimistic, privateKey, liquidatorAddress } = this.config;
+    if (!optimistic) {
+      // production path
+      if (!privateKey) {
+        throw new Error("PRIVATE_KEY is required in non-optimistic mode");
+      }
+      if (liquidatorAddress) {
+        throw new Error(
+          "LIQUIDATOR_ADDRESS is only allowed in optimistic mode",
+        );
+      }
+      const account = privateKeyToAccount(privateKey.value);
+      this.logger.info(
+        `production mode: using local account ${account.address} derived from private key`,
+      );
+      return account;
+    }
+    // optimistic path
+    if (privateKey) {
+      throw new Error(
+        "PRIVATE_KEY must not be set in optimistic mode, use LIQUIDATOR_ADDRESS to choose the sender",
+      );
+    }
+    if (!liquidatorAddress) {
+      throw new Error("LIQUIDATOR_ADDRESS is required in optimistic mode");
+    }
+    if (!this.#testClient || !this.#anvilInfo) {
+      throw new Error(
+        "optimistic mode requires anvil as first json rpc provider",
+      );
+    }
+    // impersonate once for the whole run; strategies only ever
+    // stop-impersonating borrower addresses, so no conflict.
+    // Funding this address on the fork is the anvil runner's job, not ours
+    await this.#testClient.impersonateAccount({ address: liquidatorAddress });
+    this.logger.info(
+      `optimistic mode: impersonating ${liquidatorAddress} as liquidator`,
+    );
+    return { address: liquidatorAddress, type: "json-rpc" };
   }
 
   public async liquidate(
@@ -164,10 +207,29 @@ export default class Client {
       );
     }
 
-    const serializedTransaction = await this.wallet.signTransaction(req);
-    const hash = await this.wallet.sendRawTransaction({
-      serializedTransaction,
-    });
+    let hash: Hex;
+    if (this.account.type === "json-rpc") {
+      // optimistic only: anvil accepts unsigned txs from impersonated senders
+      this.logger.debug(
+        "sending unsigned transaction from impersonated account",
+      );
+      hash = await this.wallet.sendTransaction(req);
+    } else {
+      // production path: sign locally and send raw transaction
+      this.logger.debug(
+        "signing and sending raw transaction with local account",
+      );
+      const wallet = this.wallet as WalletClient<
+        Transport,
+        Chain,
+        LocalAccount,
+        undefined
+      >;
+      const serializedTransaction = await wallet.signTransaction(req);
+      hash = await wallet.sendRawTransaction({
+        serializedTransaction,
+      });
+    }
     const { data: _data, to, value, account, ...params } = req;
     this.logger.debug({ hash, ...params }, "sent transaction");
     const receipt = await this.#waitForTransactionReceipt(hash);
@@ -287,12 +349,7 @@ export default class Client {
     return this.#publicClient;
   }
 
-  public get wallet(): WalletClient<
-    Transport,
-    Chain,
-    PrivateKeyAccount,
-    undefined
-  > {
+  public get wallet(): WalletClient<Transport, Chain, Account, undefined> {
     if (!this.#walletClient) {
       throw new Error("wallet client not initialized");
     }
@@ -309,7 +366,7 @@ export default class Client {
     return this.#testClient;
   }
 
-  public get account(): PrivateKeyAccount {
+  public get account(): Account {
     return this.wallet.account;
   }
 

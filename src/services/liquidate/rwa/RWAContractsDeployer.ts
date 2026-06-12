@@ -2,7 +2,7 @@ import { securitizeLiquidatorHelperAbi } from "@gearbox-protocol/liquidator-cont
 import { SecuritizeLiquidatorHelper_bytecode } from "@gearbox-protocol/liquidator-contracts/bytecode";
 import { SDKConstruct } from "@gearbox-protocol/sdk";
 import { Create2Deployer } from "@gearbox-protocol/sdk/dev";
-import type { Address, Chain, PrivateKeyAccount, Transport } from "viem";
+import type { Account, Address, Chain, Transport } from "viem";
 import { DI } from "../../../di.js";
 import { type ILogger, Logger } from "../../../log/index.js";
 import type Client from "../../Client.js";
@@ -15,7 +15,7 @@ export class RWAContractsDeployer extends SDKConstruct {
   @DI.Inject(DI.Client)
   liquidatorClient!: Client;
 
-  #deployer?: Create2Deployer<Transport, Chain, PrivateKeyAccount>;
+  #deployer?: Create2Deployer<Transport, Chain, Account>;
   #address?: Address;
 
   public async syncState(): Promise<void> {

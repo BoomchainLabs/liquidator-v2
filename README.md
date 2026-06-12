@@ -64,7 +64,7 @@ For example `--json-rpc-providers http://127.0.0.1:8545 --alchemy-keys xxx,yyy -
 --stale-block-threshold <threshold>          Stale block threshold in seconds, to notify and try to rotate rpc provider. 0 means no monitoring (env variable STALE_BLOCK_THRESHOLD)
 --logs-page-size <size>                      Max block range size for eth_getLogs (env variable LOGS_PAGE_SIZE)
 --polling-interval <interval>                Polling interval in milliseconds, default to what's default in viem (env variable POLLING_INTERVAL)
---private-key <key>                          Private key used to send liquidation transactions (env variable PRIVATE_KEY)
+--private-key <key>                          Private key used to send liquidation transactions. Required in non-optimistic mode, must not be set in optimistic mode (env variable PRIVATE_KEY)
 --min-balance <balance>                      Minimum balance to liquidate (env variable MIN_BALANCE)
 --hf-threshold <threshold>                   Filter out all accounts with HF >= threshold during scan stage (env variable HF_THRESHOLD)
 --num-splits <splits>                        Default numSplits for router v3.1 contract (env variable NUM_SPLITS)
@@ -95,8 +95,11 @@ For example `--json-rpc-providers http://127.0.0.1:8545 --alchemy-keys xxx,yyy -
 
 ### Optimistic mode
 
+In optimistic mode no private key is used. Instead, transactions are sent from an address impersonated via anvil (`--liquidator-address`/`LIQUIDATOR_ADDRESS`, required). Funding this address on the fork is the responsibility of whatever launches anvil, not this app.
+
 ```
 --optimistic                                 Enable optimistic liquidations (env variable OPTIMISTIC)
+--liquidator-address <address>               Address to impersonate as transaction sender on anvil fork. Required in optimistic mode, must not be set in non-optimistic mode (env variable LIQUIDATOR_ADDRESS)
 --optimistic-timestamp <timestamp>           Optimistic timestamp to pass from external runner, in ms (env variable OPTIMISTIC_TIMESTAMP)
 --out-dir <dir>                              Directory to save json with optimistic liquidation results (env variable OUT_DIR)
 --out-endpoint <url>                         REST endpoint to POST json with optimistic liquidation results (env variable OUT_ENDPOINT)

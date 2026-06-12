@@ -9,11 +9,11 @@ import type {
 import { ADDRESS_0X0, hexEq } from "@gearbox-protocol/sdk";
 import { Create2Deployer } from "@gearbox-protocol/sdk/dev";
 import {
+  type Account,
   type Address,
   type Chain,
   encodeAbiParameters,
   type Hex,
-  type PrivateKeyAccount,
   parseAbi,
   type SimulateContractReturnType,
   type Transport,
@@ -28,11 +28,7 @@ import type {
 import { humanizePreviewPartialLiquidation } from "../utils.js";
 
 export default abstract class PartialLiquidatorV310Contract extends AbstractPartialLiquidatorContract {
-  protected readonly deployer: Create2Deployer<
-    Transport,
-    Chain,
-    PrivateKeyAccount
-  >;
+  protected readonly deployer: Create2Deployer<Transport, Chain, Account>;
   #setupComplete = false;
 
   constructor(name: string, router: Address, curator: Curator) {

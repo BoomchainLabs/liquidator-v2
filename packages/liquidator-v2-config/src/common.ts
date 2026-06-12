@@ -144,6 +144,7 @@ export const CommonSchema = z.object({
     }),
   /**
    * Private key used to send liquidation transactions
+   * Required in non-optimistic mode, must not be set in optimistic mode
    */
   privateKey: z
     .string()
@@ -152,11 +153,23 @@ export const CommonSchema = z.object({
       return isHex(s) ? s : `0x${s}`;
     })
     .transform(CensoredString.transform<Hex>)
+    .optional()
     .register(zommandRegistry, {
       flags: "--private-key <key>",
-      description: "Private key used to send liquidation transactions",
+      description:
+        "Private key used to send liquidation transactions. Required in non-optimistic mode, must not be set in optimistic mode",
       env: "PRIVATE_KEY",
     }),
+  /**
+   * Address to impersonate as transaction sender on anvil fork
+   * Required in optimistic mode, must not be set in non-optimistic mode
+   */
+  liquidatorAddress: addressLike().optional().register(zommandRegistry, {
+    flags: "--liquidator-address <address>",
+    description:
+      "Address to impersonate as transaction sender on anvil fork. Required in optimistic mode, must not be set in non-optimistic mode",
+    env: "LIQUIDATOR_ADDRESS",
+  }),
   /**
    * If balance drops before this value - we should send notification
    */
