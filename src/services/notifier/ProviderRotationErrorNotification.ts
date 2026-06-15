@@ -7,6 +7,7 @@ import type { NetworkType } from "@gearbox-protocol/sdk";
 import { md } from "@vlad-yakovlev/telegram-md";
 import type { Address, BaseError } from "viem";
 import { DI } from "../../di.js";
+import { censor } from "../../log/censor.js";
 
 export class ProviderRotationErrorNotification implements INotification {
   readonly #oldT: string;
@@ -17,7 +18,9 @@ export class ProviderRotationErrorNotification implements INotification {
     const cfg = DI.get(DI.Config) as Config;
     this.#network = cfg.network;
     this.#oldT = oldT;
-    this.#reason = reason ? `: ${reason.shortMessage} ${reason.details}` : "";
+    this.#reason = reason
+      ? censor(`: ${reason.shortMessage} ${reason.details}`)
+      : "";
   }
 
   public messageFor(

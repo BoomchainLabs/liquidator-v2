@@ -5,6 +5,7 @@ import type {
 import type { CreditAccountData, OnchainSDK } from "@gearbox-protocol/sdk";
 import { type Markdown, md } from "@vlad-yakovlev/telegram-md";
 import type { Address } from "viem";
+import { censor } from "../../log/censor.js";
 import AccountNotification from "./AccountNotification.js";
 import joinCalls from "./joinCalls.js";
 
@@ -25,7 +26,9 @@ export class LiquidationErrorNotification
   ) {
     super(sdk, ca);
     this.#strategyName = strategyName;
-    this.#error = error.length > 128 ? `${error.slice(0, 128)}...` : error;
+    const censored = censor(error);
+    this.#error =
+      censored.length > 128 ? `${censored.slice(0, 128)}...` : censored;
     this.#callsHuman = callsHuman;
   }
 

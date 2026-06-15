@@ -22,6 +22,7 @@ import {
 import attachSDK from "./attachSDK.js";
 import { DI } from "./di.js";
 import Liquidator from "./Liquidator.js";
+import { initCensor } from "./log/censor.js";
 import { createTransport } from "./utils/index.js";
 import version from "./version.js";
 
@@ -49,6 +50,7 @@ const program = new Zommand("liquidator-v2", {
   .description("Liquidator v2")
   .version(version)
   .action(async schema => {
+    initCensor(schema);
     const logger = DI.create(DI.Logger, "App");
     const msg = [
       `Launching liquidator v${version} in`,

@@ -35,7 +35,7 @@
     "prepack": "tsup"
   },
   "dependencies": {
-    "@gearbox-protocol/cli-utils": "^6.13.1",
+    "@gearbox-protocol/cli-utils": "^6.15.0",
     "zod": "^4.4.3"
   },
   "peerDependencies": {

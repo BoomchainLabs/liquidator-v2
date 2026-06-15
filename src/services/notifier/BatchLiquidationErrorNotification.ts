@@ -11,6 +11,7 @@ import {
 } from "@gearbox-protocol/sdk";
 import { type Markdown, md } from "@vlad-yakovlev/telegram-md";
 import type { Address } from "viem";
+import { censor } from "../../log/censor.js";
 
 export class BatchLiquidationErrorNotification
   extends SDKConstruct
@@ -22,7 +23,9 @@ export class BatchLiquidationErrorNotification
   constructor(sdk: OnchainSDK, accounts: CreditAccountData[], error: string) {
     super(sdk);
     this.#accounts = accounts;
-    this.#error = error.length > 128 ? `${error.slice(0, 128)}...` : error;
+    const censored = censor(error);
+    this.#error =
+      censored.length > 128 ? `${censored.slice(0, 128)}...` : censored;
   }
 
   public messageFor(

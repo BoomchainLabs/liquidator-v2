@@ -3,6 +3,7 @@ import type { Logger as ILogger } from "pino";
 import pino from "pino";
 
 import { DI } from "../di.js";
+import { censor } from "./censor.js";
 
 @DI.Factory(DI.Logger)
 export class LoggerFactory implements IFactory<ILogger, [string]> {
@@ -22,6 +23,7 @@ export class LoggerFactory implements IFactory<ILogger, [string]> {
     this.#logger = pino({
       level: process.env.LOG_LEVEL ?? "debug",
       base: { executionId },
+      hooks: { streamWrite: censor },
       mixin: () => ({
         ...LoggerFactory.#logContext,
       }),
