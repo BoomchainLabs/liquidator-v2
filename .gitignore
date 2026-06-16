@@ -5,15 +5,16 @@
 .idea/
 artifacts/
 build/
+dist/
 cache/
 coverage*
 keys/*
 node_modules/
 typechain/
 
-/logs/*.json
+**/logs/*.json
 *.log
 *.tsbuildinfo
 
 # Optimistic output
-/output
+output/

@@ -32,10 +32,11 @@
   ],
   "scripts": {
     "build": "tsup",
-    "prepack": "tsup"
+    "prepack": "tsup",
+    "typecheck:ci": "tsc --noEmit"
   },
   "dependencies": {
-    "@gearbox-protocol/cli-utils": "^6.15.0",
+    "@gearbox-protocol/cli-utils": "^6.16.2",
     "zod": "^4.4.3"
   },
   "peerDependencies": {

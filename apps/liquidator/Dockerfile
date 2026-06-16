@@ -22,7 +22,9 @@ ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
 
 COPY --from=dev /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml /app/
-COPY --from=dev /app/build/ /app/build
+COPY --from=dev /app/apps/liquidator/package.json /app/apps/liquidator/package.json
+COPY --from=dev /app/packages/liquidator-v2-config/package.json /app/packages/liquidator-v2-config/package.json
+COPY --from=dev /app/apps/liquidator/build/ /app/apps/liquidator/build
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     corepack enable \
@@ -48,4 +50,4 @@ COPY --from=prod /root/.foundry/bin/cast /app
 COPY --from=prod /usr/bin/timeout /app/timeout
 ENV PATH="/app:${PATH}"
 
-ENTRYPOINT ["/nodejs/bin/node", "--enable-source-maps", "/app/build/index.mjs"]
+ENTRYPOINT ["/nodejs/bin/node", "--enable-source-maps", "/app/apps/liquidator/build/index.mjs"]

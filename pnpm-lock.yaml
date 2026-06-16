@@ -7,10 +7,31 @@ settings:
 importers:
 
   .:
+    devDependencies:
+      '@biomejs/biome':
+        specifier: ^2.4.15
+        version: 2.4.15
+      '@commitlint/cli':
+        specifier: ^21.0.1
+        version: 21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3)
+      '@commitlint/config-conventional':
+        specifier: ^21.0.1
+        version: 21.0.1
+      '@gearbox-protocol/biome-config':
+        specifier: ^1.0.28
+        version: 1.0.29(@biomejs/biome@2.4.15)
+      husky:
+        specifier: ^9.1.7
+        version: 9.1.7
+      lint-staged:
+        specifier: ^17.0.5
+        version: 17.0.5
+
+  apps/liquidator:
     dependencies:
       '@gearbox-protocol/liquidator-v2-config':
         specifier: workspace:*
-        version: link:packages/liquidator-v2-config
+        version: link:../../packages/liquidator-v2-config
       node-pty:
         specifier: ^1.1.0
         version: 1.1.0
@@ -24,24 +45,9 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.1053.0
         version: 3.1053.0
-      '@biomejs/biome':
-        specifier: ^2.4.15
-        version: 2.4.15
-      '@commander-js/extra-typings':
-        specifier: ^14.0.0
-        version: 14.0.0(commander@14.0.3)
-      '@commitlint/cli':
-        specifier: ^21.0.1
-        version: 21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3)
-      '@commitlint/config-conventional':
-        specifier: ^21.0.1
-        version: 21.0.1
-      '@gearbox-protocol/biome-config':
-        specifier: ^1.0.28
-        version: 1.0.29(@biomejs/biome@2.4.15)
       '@gearbox-protocol/cli-utils':
-        specifier: ^6.15.0
-        version: 6.15.0(axios@1.16.1)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.50.4(typescript@6.0.3)(zod@4.4.3)))
+        specifier: ^6.16.2
+        version: 6.16.2(axios@1.16.1)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.50.4(typescript@6.0.3)(zod@4.4.3)))
       '@gearbox-protocol/liquidator-contracts':
         specifier: ^v1.36.0-securitize.1
         version: 1.36.0-securitize.2
@@ -72,12 +78,6 @@ importers:
       esbuild:
         specifier: ^0.28.0
         version: 0.28.0
-      husky:
-        specifier: ^9.1.7
-        version: 9.1.7
-      lint-staged:
-        specifier: ^17.0.5
-        version: 17.0.5
       nanoid:
         specifier: ^5.1.11
         version: 5.1.11
@@ -103,8 +103,8 @@ importers:
   packages/liquidator-v2-config:
     dependencies:
       '@gearbox-protocol/cli-utils':
-        specifier: ^6.15.0
-        version: 6.15.0(axios@1.16.1)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.50.4(typescript@6.0.3)(zod@4.4.3)))
+        specifier: ^6.16.2
+        version: 6.16.2(axios@1.16.1)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.50.4(typescript@6.0.3)(zod@4.4.3)))
       '@gearbox-protocol/sdk':
         specifier: '>=14.10.1'
         version: 14.10.2(axios@1.16.1)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.50.4(typescript@6.0.3)(zod@4.4.3)))
@@ -821,8 +821,8 @@ packages:
     peerDependencies:
       '@biomejs/biome': ^2.4.15
 
-  '@gearbox-protocol/cli-utils@6.15.0':
-    resolution: {integrity: sha512-vxacoaIEAxm/+jvLC3abn5zzK+OighfOdiGdCWdaXngi0QXvMOPupedXCWYuC9Rddb4Z6hq6EgldRVML3SFK6w==}
+  '@gearbox-protocol/cli-utils@6.16.2':
+    resolution: {integrity: sha512-blWuHKm1p990yMkL+VXtnLXP/m1iySpA41d5K4KGSd1UtRkX7rKVP9ii+2Rd+IWQSbcW+89wv46SqTQP5ibVgA==}
     engines: {node: '>=18'}
 
   '@gearbox-protocol/integrations-v3@1.54.2':
@@ -3254,11 +3254,12 @@ snapshots:
     dependencies:
       '@biomejs/biome': 2.4.15
 
-  '@gearbox-protocol/cli-utils@6.15.0(axios@1.16.1)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.50.4(typescript@6.0.3)(zod@4.4.3)))':
+  '@gearbox-protocol/cli-utils@6.16.2(axios@1.16.1)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.50.4(typescript@6.0.3)(zod@4.4.3)))':
     dependencies:
       '@aws-sdk/client-s3': 3.1053.0
       '@aws-sdk/client-secrets-manager': 3.1053.0
       '@aws-sdk/client-ssm': 3.1053.0
+      '@commander-js/extra-typings': 14.0.0(commander@14.0.3)
       '@gearbox-protocol/sdk': 14.10.2(axios@1.16.1)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.50.4(typescript@6.0.3)(zod@4.4.3)))
       '@vlad-yakovlev/telegram-md': 2.1.0
       abitype: 1.2.4(typescript@6.0.3)(zod@4.4.3)

@@ -39,6 +39,7 @@
           "PACKAGE_VERSION": "{{version}}"
         },
         "dockerImage": "liquidator-v2",
+        "dockerFile": "apps/liquidator/Dockerfile",
         "dockerRegistry": "ghcr.io",
         "dockerProject": "gearbox-protocol",
         "dockerBuildQuiet": false,
