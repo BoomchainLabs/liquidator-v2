@@ -1,23 +1,33 @@
 # ---- shared: install the whole workspace once ----
-FROM node:24.15.0-trixie AS deps
+# Built on the native build platform: the workspace install and esbuild bundle
+# are arch-independent, so we avoid emulating this heavy step under QEMU.
+FROM --platform=$BUILDPLATFORM node:24.15.0-trixie AS deps
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV HUSKY=0
 
 WORKDIR /app
 
-COPY . .
+# Copy only manifests + lockfile first so the install layer stays cached across
+# source-only changes.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/liquidator/package.json apps/liquidator/
+COPY apps/optimist/package.json apps/optimist/
+COPY packages/liquidator-v2-config/package.json packages/liquidator-v2-config/
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     corepack enable \
     && pnpm install --frozen-lockfile
+
+COPY . .
 
 # ---- shared: build every app (esbuild bundles) ----
 FROM deps AS build
 
 RUN pnpm -r build
 
-# ---- liquidator: production node_modules (flat) + foundry ----
+# ---- liquidator: production node_modules (flat) ----
 FROM node:24.15.0-trixie AS liquidator-prod
 
 ENV PNPM_HOME="/pnpm"
@@ -42,12 +52,6 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 # the top level.
 RUN ln -s /app/node_modules/.pnpm/node_modules/node-pty /app/node_modules/node-pty
 
-# Install foundry (provides `cast` used for optimistic trace generation)
-ENV FOUNDRY_DIR=/root/.foundry
-RUN mkdir ${FOUNDRY_DIR} && \
-    curl -L https://foundry.paradigm.xyz | bash && \
-    ${FOUNDRY_DIR}/bin/foundryup
-
 # ---- liquidator: final image ----
 FROM gcr.io/distroless/nodejs24-debian13 AS liquidator
 ARG PACKAGE_VERSION
@@ -57,14 +61,16 @@ LABEL org.opencontainers.image.version="${PACKAGE_VERSION}"
 WORKDIR /app
 COPY --from=liquidator-prod /app/node_modules /app/node_modules
 COPY --from=liquidator-prod /app/apps/liquidator/build/ /app/
-COPY --from=liquidator-prod /root/.foundry/bin/cast /app
+# `cast` (optimistic trace generation) pulled from the official multi-arch
+# foundry image; COPY --from resolves to the target platform automatically.
+COPY --from=ghcr.io/foundry-rs/foundry:v1.7.1 /usr/local/bin/cast /app/cast
 COPY --from=liquidator-prod /usr/bin/timeout /app/timeout
 ENV PATH="/app:${PATH}"
 
 ENTRYPOINT ["/nodejs/bin/node", "--enable-source-maps", "/app/index.mjs"]
 
 # ---- optimist: final image (esbuild output is fully bundled) ----
-FROM gcr.io/distroless/nodejs24-debian12 AS optimist
+FROM gcr.io/distroless/nodejs24-debian13 AS optimist
 ARG OPTIMIST_VERSION
 ARG OPTIMIST_TAG
 ENV NODE_ENV=production
