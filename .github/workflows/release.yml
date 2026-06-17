@@ -48,6 +48,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
+      - name: Set up QEMU
+        if: steps.semantic.outputs.new_release_published == 'true'
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         if: steps.semantic.outputs.new_release_published == 'true'
         uses: docker/setup-buildx-action@v3
@@ -59,6 +63,7 @@ jobs:
           context: .
           file: ./Dockerfile
           target: liquidator
+          platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
             PACKAGE_VERSION=${{ steps.semantic.outputs.new_release_version }}
@@ -75,6 +80,7 @@ jobs:
           context: .
           file: ./Dockerfile
           target: optimist
+          platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
             OPTIMIST_VERSION=${{ steps.semantic.outputs.new_release_version }}
