@@ -3,8 +3,8 @@ import { createWriteStream } from "node:fs";
 import path from "node:path";
 import type { CommonSchema } from "@gearbox-protocol/liquidator-v2-config";
 import { json_stringify } from "@gearbox-protocol/sdk";
+import { spawn } from "@homebridge/node-pty-prebuilt-multiarch";
 import { nanoid } from "nanoid";
-import { spawn } from "node-pty";
 import {
   BaseError,
   ContractFunctionExecutionError,

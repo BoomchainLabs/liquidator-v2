@@ -19,7 +19,7 @@ build({
       const __dirname = path.dirname(__filename);
     `,
   },
-  external: ["node-pty"],
+  external: ["@homebridge/node-pty-prebuilt-multiarch"],
 }).catch(e => {
   console.error(e);
   process.exit(1);

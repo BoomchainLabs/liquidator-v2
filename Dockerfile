@@ -47,10 +47,12 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     && pnpm install --prod --frozen-lockfile
 
 # The bundled entry runs from /app/index.mjs and imports the only external
-# runtime dependency (node-pty, native bindings) via ESM, which resolves only
-# through node_modules. pnpm hoists it privately under .pnpm, so expose it at
-# the top level.
-RUN ln -s /app/node_modules/.pnpm/node_modules/node-pty /app/node_modules/node-pty
+# runtime dependency (@homebridge/node-pty-prebuilt-multiarch, native bindings)
+# via ESM, which resolves only through node_modules. pnpm hoists it privately
+# under .pnpm, so expose it at the top level.
+RUN mkdir -p /app/node_modules/@homebridge \
+    && ln -s /app/node_modules/.pnpm/node_modules/@homebridge/node-pty-prebuilt-multiarch \
+       /app/node_modules/@homebridge/node-pty-prebuilt-multiarch
 
 # ---- liquidator: final image ----
 FROM gcr.io/distroless/nodejs24-debian13 AS liquidator
