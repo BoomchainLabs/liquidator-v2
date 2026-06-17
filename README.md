@@ -65,7 +65,7 @@ For example `--json-rpc-providers http://127.0.0.1:8545 --alchemy-keys xxx,yyy -
 --logs-page-size <size>                      Max block range size for eth_getLogs (env variable LOGS_PAGE_SIZE)
 --polling-interval <interval>                Polling interval in milliseconds, default to what's default in viem (env variable POLLING_INTERVAL)
 --private-key <key>                          Private key used to send liquidation transactions. Required in non-optimistic mode, must not be set in optimistic mode (env variable PRIVATE_KEY)
---min-balance <balance>                      Minimum balance to liquidate (env variable MIN_BALANCE)
+--min-balance-gas <gas>                      Minimum executor gas budget (in gas units); required balance = this * current gas price (env variable MIN_BALANCE_GAS)
 --hf-threshold <threshold>                   Filter out all accounts with HF >= threshold during scan stage (env variable HF_THRESHOLD)
 --num-splits <splits>                        Default numSplits for router v3.1 contract (env variable NUM_SPLITS)
 --liquidation-mode <mode>                    Liquidator mode (full/partial/batch/deleverage) (env variable LIQUIDATION_MODE)

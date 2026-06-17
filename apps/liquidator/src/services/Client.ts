@@ -44,6 +44,12 @@ import { LowBalanceNotification } from "./notifier/index.js";
 
 const GAS_X = 5000n;
 
+// Multipliers used to inflate the estimated gas price so that transactions
+// are mined quickly. Kept in one place so that the balance check and the
+// liquidation flow agree on what "current gas price" means.
+const MAX_FEE_MULTIPLIER = 2n;
+const PRIORITY_FEE_MULTIPLIER = 10n;
+
 @DI.Injectable(DI.Client)
 export default class Client {
   @DI.Inject(DI.Config)
@@ -180,8 +186,9 @@ export default class Client {
     } as Parameters<typeof this.wallet.prepareTransactionRequest>[0]);
     const { gas, maxFeePerGas, maxPriorityFeePerGas } = req;
     if (maxPriorityFeePerGas && maxFeePerGas) {
-      req.maxPriorityFeePerGas = 10n * maxPriorityFeePerGas;
-      req.maxFeePerGas = 2n * maxFeePerGas + req.maxPriorityFeePerGas;
+      req.maxPriorityFeePerGas = PRIORITY_FEE_MULTIPLIER * maxPriorityFeePerGas;
+      req.maxFeePerGas =
+        MAX_FEE_MULTIPLIER * maxFeePerGas + req.maxPriorityFeePerGas;
     }
     if (gas) {
       req.gas = (gas * (GAS_X + PERCENTAGE_FACTOR)) / PERCENTAGE_FACTOR;
@@ -320,23 +327,51 @@ export default class Client {
     return receipt;
   }
 
+  /**
+   * Returns the inflated gas price (wei per gas) used to size transactions.
+   * Mirrors the inflation applied in `liquidate()` so the balance check and
+   * the actual transaction cost agree on the gas price.
+   */
+  async #effectiveGasPrice(): Promise<bigint> {
+    const { maxFeePerGas, maxPriorityFeePerGas } =
+      await this.pub.estimateFeesPerGas();
+    if (maxFeePerGas && maxPriorityFeePerGas) {
+      return (
+        MAX_FEE_MULTIPLIER * maxFeePerGas +
+        PRIORITY_FEE_MULTIPLIER * maxPriorityFeePerGas
+      );
+    }
+    // legacy / non EIP-1559 chains
+    return this.pub.getGasPrice();
+  }
+
   async #checkBalance(): Promise<void> {
     const balance = await this.pub.getBalance({ address: this.address });
+    const gasPrice = await this.#effectiveGasPrice();
+    const { minBalanceGas } = this.config;
+    const minBalance = minBalanceGas * gasPrice;
     this.#balance = {
       value: balance,
-      status:
-        !this.config.minBalance || balance >= this.config.minBalance
-          ? "healthy"
-          : "alert",
+      status: balance >= minBalance ? "healthy" : "alert",
     };
-    this.logger.debug(`liquidator balance is ${formatEther(balance)}`);
-    if (balance < this.config.minBalance) {
+    this.logger.debug(
+      {
+        balance: formatEther(balance),
+        minBalance: formatEther(minBalance),
+        minBalanceGas,
+        gasPrice,
+      },
+      `liquidator balance is ${formatEther(balance)}`,
+    );
+    if (balance < minBalance) {
       this.notifier.alert(
         new LowBalanceNotification(
           this.config.network,
           this.address,
           balance,
-          this.config.minBalance,
+          minBalance,
+          minBalanceGas,
+          gasPrice,
         ),
       );
     }
