@@ -17,8 +17,14 @@ import type { IOptimisticOutputWriter } from "../output/index.js";
 import AccountHelper from "./AccountHelper.js";
 import type { OptimisticResults } from "./OptimisiticResults.js";
 
-export interface ExecutorBalance {
+export interface LiquidatorBalances {
+  /**
+   * Executor balance in gas token
+   */
   eth: bigint;
+  /**
+   * Premium receiver balance in underlying token
+   */
   underlying: bigint;
 }
 
@@ -78,9 +84,13 @@ export default abstract class AbstractLiquidator<
     };
   }
 
-  protected async getExecutorBalance(
+  protected get premiumReceiver(): Address {
+    return this.config.premiumReceiver ?? this.client.address;
+  }
+
+  protected async getBalances(
     underlyingToken: Address,
-  ): Promise<ExecutorBalance> {
+  ): Promise<LiquidatorBalances> {
     const eth = await this.client.pub.getBalance({
       address: this.client.address,
     });
@@ -88,7 +98,7 @@ export default abstract class AbstractLiquidator<
       address: underlyingToken,
       abi: erc20Abi,
       functionName: "balanceOf",
-      args: [this.client.address],
+      args: [this.premiumReceiver],
     });
     return { eth, underlying };
   }

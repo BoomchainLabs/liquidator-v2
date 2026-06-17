@@ -72,7 +72,7 @@ export default abstract class LiquidationStrategyFullBase
       const { tx, routerCloseResult, calls } =
         await this.sdk.accounts.fullyLiquidate({
           account: ca,
-          to: this.client.address,
+          to: this.config.premiumReceiver ?? this.client.address,
           slippage: BigInt(this.config.slippage),
           keepAssets: this.config.keepAssets,
           ignoreReservePrices,

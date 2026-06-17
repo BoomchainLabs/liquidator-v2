@@ -76,6 +76,7 @@ For example `--json-rpc-providers http://127.0.0.1:8545 --alchemy-keys xxx,yyy -
 --slippage <value>                           Slippage value for pathfinder (env variable SLIPPAGE)
 --update-reserve-prices                      Update reserve prices (env variable UPDATE_RESERVE_PRICES)
 --keep-assets <assets...>                    List of assets to keep on account after liquidation (env variable KEEP_ASSETS)
+--premium-receiver <address>                 Address that receives the liquidation premium and leftover underlying, defaults to executor address (env variable PREMIUM_RECEIVER)
 --telegram-bot-token <token>                 Telegram bot token used to send notifications (env variable TELEGRAM_BOT_TOKEN)
 --telegram-alerts-channel <channel>          Telegram channel where bot will post critical notifications (env variable TELEGRAM_ALERTS_CHANNEL)
 --telegram-notifications-channel <channel>   Telegram channel where bot will post non-critical notifications (env variable TELEGRAM_NOTIFICATIONS_CHANNEL)

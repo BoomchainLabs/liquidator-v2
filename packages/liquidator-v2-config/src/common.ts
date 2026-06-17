@@ -339,6 +339,16 @@ export const CommonSchema = z.object({
     description: "List of assets to keep on account after liquidation",
     env: "KEEP_ASSETS",
   }),
+  /**
+   * Address that receives the liquidation premium and leftover underlying.
+   * Defaults to the executor address when unset.
+   */
+  premiumReceiver: addressLike().optional().register(zommandRegistry, {
+    flags: "--premium-receiver <address>",
+    description:
+      "Address that receives the liquidation premium and leftover underlying (defaults to executor address)",
+    env: "PREMIUM_RECEIVER",
+  }),
 
   /**
    * Directory to save json with optimistic liquidation results

@@ -21,7 +21,7 @@ import {
   LiquidationSuccessNotification,
 } from "../notifier/index.js";
 import AbstractLiquidator, {
-  type ExecutorBalance,
+  type LiquidatorBalances,
 } from "./AbstractLiquidator.js";
 import LiquidationStrategyDeleverage from "./LiquidationStrategyDeleverage.js";
 import LiquidationStrategyFull from "./LiquidationStrategyFull.js";
@@ -38,7 +38,11 @@ type OptimisticStrategyResult = {
   preview?: LiquidationPreview;
   receipt?: TransactionReceipt;
 } & (
-  | { success: true; state: CreditAccountData; balancesAfter: ExecutorBalance }
+  | {
+      success: true;
+      state: CreditAccountData;
+      balancesAfter: LiquidatorBalances;
+    }
   | { success: false; error: Error; decoded?: ExplainedError }
 );
 
@@ -242,7 +246,7 @@ export default class SingularLiquidator
     }
 
     try {
-      const balanceBefore = await this.getExecutorBalance(acc.underlying);
+      const balanceBefore = await this.getBalances(acc.underlying);
 
       if (applicable.length === 1) {
         const s = applicable[0];
@@ -356,7 +360,7 @@ export default class SingularLiquidator
         );
       }
       result.state = ca;
-      result.balancesAfter = await this.getExecutorBalance(acc.underlying);
+      result.balancesAfter = await this.getBalances(acc.underlying);
     } catch (e) {
       logger.error(e, "strategy failed");
       // Decode the error (and save foundry trace) before reverting the snapshot
