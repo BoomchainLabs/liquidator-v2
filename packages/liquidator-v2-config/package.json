@@ -41,7 +41,7 @@
   },
   "peerDependencies": {
     "@gearbox-protocol/sdk": ">=14.10.1",
-    "viem": ">=2.23.15 <3.0.0"
+    "viem": "2.52.2"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

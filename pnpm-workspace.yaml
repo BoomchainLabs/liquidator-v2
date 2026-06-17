@@ -2,9 +2,12 @@ packages:
   - "apps/*"
   - "packages/*"
 allowBuilds:
+  cpu-features: true
   esbuild: true
   node-pty: true
+  protobufjs: true
   secp256k1: true
+  ssh2: true
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - "@gearbox-protocol/*"

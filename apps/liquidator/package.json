@@ -20,25 +20,25 @@
     "viem-deal": "^2.0.4"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.1053.0",
+    "@aws-sdk/client-s3": "^3.1069.0",
     "@gearbox-protocol/cli-utils": "^6.16.2",
     "@gearbox-protocol/liquidator-contracts": "^v1.36.0-securitize.1",
     "@gearbox-protocol/sdk": "14.10.2",
-    "@types/node": "^25.9.1",
+    "@types/node": "^25.9.3",
     "@vlad-yakovlev/telegram-md": "^2.1.0",
     "abitype": "^1.2.4",
-    "axios": "^1.16.1",
+    "axios": "^1.18.0",
     "axios-retry": "^4.5.0",
-    "date-fns": "^4.3.0",
+    "date-fns": "^4.4.0",
     "di-at-home": "^0.0.7",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "nanoid": "^5.1.11",
     "node-pty": "^1.1.0",
     "pino": "^10.3.1",
     "tsx": "4.22.3",
     "typescript": "^6.0.3",
-    "viem": "^2.50.4",
-    "vitest": "^4.1.7",
+    "viem": "2.52.2",
+    "vitest": "^4.1.9",
     "zod": "^4.4.3"
   }
 }

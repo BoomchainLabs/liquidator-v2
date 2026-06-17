@@ -7,8 +7,9 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "build": "pnpm --filter @gearbox-protocol/liquidator-v2 build",
+    "build": "pnpm -r build",
     "liquidator": "pnpm --filter @gearbox-protocol/liquidator-v2 start",
+    "optimist": "pnpm --filter @gearbox-protocol/optimist start",
     "test": "pnpm -r test",
     "diagnose": "pnpm --filter @gearbox-protocol/liquidator-v2 diagnose",
     "typecheck:ci": "pnpm -r typecheck:ci",
@@ -16,12 +17,12 @@
     "check:ci": "biome check"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.15",
-    "@commitlint/cli": "^21.0.1",
-    "@commitlint/config-conventional": "^21.0.1",
-    "@gearbox-protocol/biome-config": "^1.0.28",
+    "@biomejs/biome": "^2.5.0",
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@gearbox-protocol/biome-config": "^1.0.30",
     "husky": "^9.1.7",
-    "lint-staged": "^17.0.5"
+    "lint-staged": "^17.0.7"
   },
   "commitlint": {
     "extends": [
@@ -33,5 +34,5 @@
       "biome check --no-errors-on-unmatched --write"
     ]
   },
-  "packageManager": "pnpm@11.1.1"
+  "packageManager": "pnpm@11.7.0"
 }
