@@ -5,7 +5,6 @@ import { Logger } from "../logger";
 import type { INotification } from "../notifier";
 import type { ExecutionReport, TypedSDK } from "../types";
 import { CheckCoverage } from "./CheckCoverage";
-import { CheckInstanceBalances } from "./CheckInstanceBalances";
 import { CheckLiquidationDiscount } from "./CheckLiquidationDiscount";
 import { CheckPermissions } from "./CheckPermissions";
 import { CheckZeroDiscovery } from "./CheckZeroDiscovery";
@@ -23,7 +22,6 @@ export class ExecutionAnalyzer {
     new CheckCoverage(),
     // new CheckParity(), // TODO: this is unusable for now
     new CheckPermissions(),
-    new CheckInstanceBalances(),
     new CheckLiquidationDiscount(),
   ];
 
