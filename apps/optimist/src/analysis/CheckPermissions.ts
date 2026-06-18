@@ -1,3 +1,4 @@
+import type { ExecutionReport } from "@gearbox-protocol/liquidator-v2-config";
 import {
   AddressMap,
   type CreditSuite,
@@ -8,7 +9,6 @@ import type { Markdown } from "@vlad-yakovlev/telegram-md";
 import { md } from "@vlad-yakovlev/telegram-md";
 import type { Address } from "viem";
 import type { INotification } from "../notifier";
-import type { ExecutionReport } from "../types";
 import { marketsForCurator, mdList } from "../utils";
 import { AbstractInstanceCheck } from "./AbstractInstanceCheck";
 import type { ICheck, LiquidatorInstance } from "./types";

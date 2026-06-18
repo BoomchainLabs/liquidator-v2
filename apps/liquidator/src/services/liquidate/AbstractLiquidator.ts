@@ -81,6 +81,7 @@ export default abstract class AbstractLiquidator<
       liquidatorPremium: 0n,
       gasCost: 0n,
       strategy: "none",
+      trackId: "none",
     };
   }
 

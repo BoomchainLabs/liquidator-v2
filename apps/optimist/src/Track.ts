@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve as pathResolve } from "node:path";
 import { setTimeout } from "node:timers/promises";
-
+import type { OptimisticResult } from "@gearbox-protocol/liquidator-v2-config";
 import { json_parse, TypedObjectUtils } from "@gearbox-protocol/sdk";
 import { iAliasedLossPolicyV310Abi } from "@gearbox-protocol/sdk/abi/310/generated";
 import { iDegenNFTV2Abi } from "@gearbox-protocol/sdk/abi/iDegenNFTV2";
@@ -27,13 +27,7 @@ import DI from "./di";
 import type { ContainerManager } from "./docker";
 import type { ContainerInfo } from "./docker/types";
 import { Logger } from "./logger";
-import type {
-  ITrack,
-  OptimisticFile,
-  OptimisticResult,
-  TrackResult,
-  TypedSDK,
-} from "./types";
+import type { ITrack, OptimisticFile, TrackResult, TypedSDK } from "./types";
 import { formatTs, getChain } from "./utils";
 
 export type TrackOptions = LiquidatorConfig & {

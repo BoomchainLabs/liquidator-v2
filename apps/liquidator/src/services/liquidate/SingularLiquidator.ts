@@ -266,6 +266,7 @@ export default class SingularLiquidator
           // strategy/setup/preview correlate in the discriminated union; assign together
           Object.assign(result, {
             strategy: strategy.kind,
+            trackId: strategy.kind,
             setup: makeLiquidatable!.setup,
             preview: strategyResult.preview,
           });

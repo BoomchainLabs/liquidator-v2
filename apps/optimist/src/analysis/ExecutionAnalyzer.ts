@@ -1,9 +1,10 @@
+import type { ExecutionReport } from "@gearbox-protocol/liquidator-v2-config";
 import type { Curator } from "@gearbox-protocol/sdk";
 import type { Logger as ILogger } from "pino";
 import DI from "../di";
 import { Logger } from "../logger";
 import type { INotification } from "../notifier";
-import type { ExecutionReport, TypedSDK } from "../types";
+import type { TypedSDK } from "../types";
 import { CheckCoverage } from "./CheckCoverage";
 import { CheckLiquidationDiscount } from "./CheckLiquidationDiscount";
 import { CheckPermissions } from "./CheckPermissions";

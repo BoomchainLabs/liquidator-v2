@@ -1,9 +1,9 @@
+import type { ExecutionReport } from "@gearbox-protocol/liquidator-v2-config";
 import type { Curator } from "@gearbox-protocol/sdk";
 import type { Markdown } from "@vlad-yakovlev/telegram-md";
 import { md } from "@vlad-yakovlev/telegram-md";
 import type { Address } from "viem";
 import type { INotification } from "../notifier";
-import type { ExecutionReport } from "../types";
 import { mdList } from "../utils";
 import { AbstractInstanceCheck } from "./AbstractInstanceCheck";
 import type { ICheck } from "./types";

@@ -1,13 +1,13 @@
+import type { ExecutionReport } from "@gearbox-protocol/liquidator-v2-config";
 import { type Curator, TypedObjectUtils } from "@gearbox-protocol/sdk";
 import type { Markdown } from "@vlad-yakovlev/telegram-md";
 import { md } from "@vlad-yakovlev/telegram-md";
 import { groupBy, keyBy } from "lodash-es";
 import type { Address } from "viem";
-
 import type { Config } from "../config";
 import DI from "../di";
 import type { INotification } from "../notifier";
-import type { ExecutionReport, TypedSDK } from "../types";
+import type { TypedSDK } from "../types";
 import { mdList } from "../utils";
 import { type AccCheckStatus, getFailedAccounts } from "./getFailedAccounts";
 import type { ICheck, TrackFilter } from "./types";

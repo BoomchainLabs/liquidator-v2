@@ -251,6 +251,12 @@ export interface OptimisticResultBase<N extends Numberish = Numberish> {
    * In case when account are liquidated in batches
    */
   batchId?: string;
+  /**
+   * Track identifier. Defaults to the strategy kind in the liquidator; the
+   * optimistic runner (apps/optimist) overwrites it with the actual track id,
+   * so several tracks can share one strategy.
+   */
+  trackId: string;
 }
 
 type OptimisticResultByKind<N extends Numberish = Numberish> = {

@@ -1,10 +1,14 @@
+import type {
+  ExecutionReport,
+  TrackReport,
+} from "@gearbox-protocol/liquidator-v2-config";
 import type { Curator } from "@gearbox-protocol/sdk";
 import type { Markdown } from "@vlad-yakovlev/telegram-md";
 import { md } from "@vlad-yakovlev/telegram-md";
 import type { Config } from "../config";
 import DI from "../di";
 import type { INotification } from "../notifier";
-import type { ExecutionReport, TrackReport, TypedSDK } from "../types";
+import type { TypedSDK } from "../types";
 import type { ICheck } from "./types";
 
 /**

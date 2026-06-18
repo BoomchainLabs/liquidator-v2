@@ -1,4 +1,5 @@
-import type { ExecutionReport, ExecutionSummary } from "../types";
+import type { ExecutionReport } from "@gearbox-protocol/liquidator-v2-config";
+import type { ExecutionSummary } from "../types";
 import { version } from "../version";
 import { getFailedAccounts } from "./getFailedAccounts";
 

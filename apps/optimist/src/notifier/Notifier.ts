@@ -1,3 +1,8 @@
+import type {
+  ExecutionReport,
+  OptimisticResult,
+  TrackReport,
+} from "@gearbox-protocol/liquidator-v2-config";
 import {
   AddressMap,
   type Curator,
@@ -10,12 +15,7 @@ import type { Address } from "viem";
 import type { Config, NotificationsConfig } from "../config";
 import DI from "../di";
 import { Logger } from "../logger";
-import type {
-  ExecutionReport,
-  OptimisticResult,
-  TrackReport,
-  TypedSDK,
-} from "../types";
+import type { TypedSDK } from "../types";
 import { formatDuration, marketsForCurator, mdList } from "../utils";
 import TelegramNotifier from "./TelegramNotifier";
 import type { INotification, INotifier } from "./types";

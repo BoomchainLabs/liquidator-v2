@@ -1,7 +1,10 @@
+import type {
+  ExecutionReport,
+  TrackReport,
+} from "@gearbox-protocol/liquidator-v2-config";
 import type { Curator } from "@gearbox-protocol/sdk";
 import type { Address } from "viem";
 import type { INotification } from "../notifier";
-import type { ExecutionReport, TrackReport } from "../types";
 
 export interface ICheck {
   name: string;

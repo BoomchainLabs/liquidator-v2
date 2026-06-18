@@ -1,3 +1,4 @@
+import type { ExecutionReport } from "@gearbox-protocol/liquidator-v2-config";
 import {
   AddressMap,
   AddressSet,
@@ -5,7 +6,6 @@ import {
   TypedObjectUtils,
 } from "@gearbox-protocol/sdk";
 import type { Address } from "viem";
-import type { ExecutionReport } from "../types";
 
 export interface AccCheckStatus {
   acc: Address;

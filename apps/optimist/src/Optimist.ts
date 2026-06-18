@@ -4,6 +4,11 @@ import { resolve } from "node:path";
 
 import type { S3ClientConfig } from "@aws-sdk/client-s3";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import type {
+  ExecutionReport,
+  TrackReport,
+  WhitelistEntry,
+} from "@gearbox-protocol/liquidator-v2-config";
 import {
   AddressSet,
   type Curator,
@@ -13,7 +18,6 @@ import axios, { isAxiosError } from "axios";
 import parseDuration from "parse-duration";
 import type { Logger as ILogger } from "pino";
 import type { Address } from "viem";
-
 import { ExecutionAnalyzer, getSummary } from "./analysis";
 import type { Config } from "./config";
 import type { TaskCallback } from "./config/schema";
@@ -22,13 +26,7 @@ import type { ContainerManager } from "./docker";
 import { Logger } from "./logger";
 import { Notifier } from "./notifier";
 import Track from "./Track";
-import type {
-  ExecutionReport,
-  ITrack,
-  TrackReport,
-  TypedSDK,
-  WhitelistEntry,
-} from "./types";
+import type { ITrack, TypedSDK } from "./types";
 import { marketsForCurator, timeout } from "./utils";
 
 export default class Optimist {
