@@ -20,6 +20,7 @@ import {
   type SecuritizeRedemptionGatewayAdapterContract,
 } from "@gearbox-protocol/sdk/plugins/adapters";
 import {
+  type Address,
   BaseError,
   encodeFunctionData,
   parseEther,
@@ -68,6 +69,10 @@ export default class LiquidationStrategyRWAViaStablecoins
 
   public get name(): string {
     return "rwa-via-stablecoins";
+  }
+
+  public get premiumReceiver(): Address {
+    return this.client.address;
   }
 
   public async launch(): Promise<void> {

@@ -6,7 +6,7 @@ import type {
 } from "@gearbox-protocol/liquidator-v2-config";
 import type { CreditAccountData, OnchainSDK } from "@gearbox-protocol/sdk";
 import { filterDustUSD } from "@gearbox-protocol/sdk";
-import { type Address, erc20Abi } from "viem";
+import type { Address } from "viem";
 import { DI } from "../../di.js";
 import type { ErrorHandler } from "../../errors/index.js";
 import type { ILogger } from "../../log/index.js";
@@ -83,24 +83,5 @@ export default abstract class AbstractLiquidator<
       strategy: "none",
       trackId: "none",
     };
-  }
-
-  protected get premiumReceiver(): Address {
-    return this.config.premiumReceiver ?? this.client.address;
-  }
-
-  protected async getBalances(
-    underlyingToken: Address,
-  ): Promise<LiquidatorBalances> {
-    const eth = await this.client.pub.getBalance({
-      address: this.client.address,
-    });
-    const underlying = await this.client.pub.readContract({
-      address: underlyingToken,
-      abi: erc20Abi,
-      functionName: "balanceOf",
-      args: [this.premiumReceiver],
-    });
-    return { eth, underlying };
   }
 }

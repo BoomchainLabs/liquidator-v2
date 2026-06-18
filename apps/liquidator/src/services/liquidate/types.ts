@@ -4,7 +4,7 @@ import type {
   StrategySetups,
 } from "@gearbox-protocol/liquidator-v2-config";
 import type { CreditAccountData } from "@gearbox-protocol/sdk";
-import type { Hex, SimulateContractReturnType } from "viem";
+import type { Address, Hex, SimulateContractReturnType } from "viem";
 
 export interface ILiquidatorService {
   launch: () => Promise<void>;
@@ -42,6 +42,12 @@ export interface ILiquidationStrategy<
    * Stable discriminator used to build the strategy-specific part of OptimisticResult
    */
   readonly kind: K;
+
+  /**
+   * Address that receives the liquidation premium / leftover underlying for this
+   * strategy. Used to measure liquidator premium in optimistic mode.
+   */
+  readonly premiumReceiver: Address;
 
   launch: () => Promise<void>;
   syncState: (blockNumber: bigint) => Promise<void>;

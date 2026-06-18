@@ -45,6 +45,10 @@ export default abstract class LiquidationStrategyPartialBase<
 
   public abstract get name(): string;
 
+  public get premiumReceiver(): Address {
+    return this.client.address;
+  }
+
   #deployer: PartialContractsDeployer;
 
   constructor() {

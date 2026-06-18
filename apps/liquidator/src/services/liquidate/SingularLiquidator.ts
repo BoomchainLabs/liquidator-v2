@@ -13,7 +13,12 @@ import {
   filterDustUSD,
   type MultiCall,
 } from "@gearbox-protocol/sdk";
-import type { Hex, TransactionReceipt } from "viem";
+import {
+  type Address,
+  erc20Abi,
+  type Hex,
+  type TransactionReceipt,
+} from "viem";
 import type { ExplainedError } from "../../errors/index.js";
 import { TransactionRevertedError } from "../../errors/index.js";
 import { LoggerFactory } from "../../log/index.js";
@@ -250,10 +255,11 @@ export default class SingularLiquidator
     }
 
     try {
-      const balanceBefore = await this.getBalances(acc.underlying);
+      strategy = applicable.length === 1 ? applicable[0] : undefined;
+      const receiver = strategy?.premiumReceiver ?? this.client.address;
+      const balanceBefore = await this.#getBalances(acc.underlying, receiver);
 
-      if (applicable.length === 1) {
-        strategy = applicable[0];
+      if (strategy) {
         makeLiquidatable = await strategy.makeLiquidatable(acc);
         strategyResult = await this.#liquidateOneOptimisticStrategy(
           makeLiquidatable.account,
@@ -367,7 +373,10 @@ export default class SingularLiquidator
         );
       }
       result.state = ca;
-      result.balancesAfter = await this.getBalances(acc.underlying);
+      result.balancesAfter = await this.#getBalances(
+        acc.underlying,
+        strategy.premiumReceiver,
+      );
     } catch (e) {
       logger.error(e, "strategy failed");
       // Decode the error (and save foundry trace) before reverting the snapshot
@@ -379,6 +388,22 @@ export default class SingularLiquidator
       }
     }
     return result;
+  }
+
+  async #getBalances(
+    underlyingToken: Address,
+    receiver: Address,
+  ): Promise<LiquidatorBalances> {
+    const eth = await this.client.pub.getBalance({
+      address: this.client.address,
+    });
+    const underlying = await this.client.pub.readContract({
+      address: underlyingToken,
+      abi: erc20Abi,
+      functionName: "balanceOf",
+      args: [receiver],
+    });
+    return { eth, underlying };
   }
 
   #logBalancesChange(

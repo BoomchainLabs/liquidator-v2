@@ -4,12 +4,14 @@ import type {
   LiqduiatorConfig,
 } from "@gearbox-protocol/liquidator-v2-config";
 import {
+  AP_TREASURY,
   type CreditAccountData,
   type OnchainSDK,
   WAD,
 } from "@gearbox-protocol/sdk";
 import { iCreditFacadeV310Abi } from "@gearbox-protocol/sdk/abi/310/generated";
 import {
+  type Address,
   BaseError,
   decodeFunctionData,
   type SimulateContractReturnType,
@@ -54,6 +56,30 @@ export default abstract class LiquidationStrategyFullBase<
 
   public async syncState(_blockNumber: bigint): Promise<void> {}
 
+  /**
+   * Resolves the premium receiver as `config.premiumReceiver ?? TREASURY v0 ?? executor`.
+   * Logs the chosen receiver and its source on every access.
+   */
+  public get premiumReceiver(): Address {
+    if (this.config.premiumReceiver) {
+      this.logger.debug(
+        `premium receiver: ${this.config.premiumReceiver} (config)`,
+      );
+      return this.config.premiumReceiver;
+    }
+    try {
+      const treasury = this.sdk.addressProvider.getAddress(AP_TREASURY, 0);
+      if (treasury) {
+        this.logger.debug(`premium receiver: ${treasury} (treasury v0)`);
+        return treasury;
+      }
+    } catch {
+      // TREASURY v0 not registered; fall through to executor
+    }
+    this.logger.debug(`premium receiver: ${this.client.address} (executor)`);
+    return this.client.address;
+  }
+
   public abstract isApplicable(
     ca: CreditAccountData,
     optimistic: boolean,
@@ -75,7 +101,7 @@ export default abstract class LiquidationStrategyFullBase<
       const { tx, routerCloseResult, calls } =
         await this.sdk.accounts.fullyLiquidate({
           account: ca,
-          to: this.config.premiumReceiver ?? this.client.address,
+          to: this.premiumReceiver,
           slippage: BigInt(this.config.slippage),
           keepAssets: this.config.keepAssets,
           ignoreReservePrices,
