@@ -2,7 +2,9 @@ import type { CreditAccountData } from "@gearbox-protocol/sdk";
 import LiquidationStrategyFullBase from "./LiquidationStrategyFullBase.js";
 import type { MakeLiquidatableResult } from "./types.js";
 
-export default class LiquidationStrategyFull extends LiquidationStrategyFullBase {
+export default class LiquidationStrategyFull extends LiquidationStrategyFullBase<"full"> {
+  public readonly kind = "full" as const;
+
   protected readonly applyLossPolicy = false;
 
   constructor(name = "full") {
@@ -17,7 +19,7 @@ export default class LiquidationStrategyFull extends LiquidationStrategyFullBase
 
   public async makeLiquidatable(
     ca: CreditAccountData,
-  ): Promise<MakeLiquidatableResult> {
+  ): Promise<MakeLiquidatableResult<"full">> {
     // is handled on optimistic runner level (zero-lt script)
     return { account: ca };
   }

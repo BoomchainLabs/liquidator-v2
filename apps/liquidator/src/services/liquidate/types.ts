@@ -1,57 +1,24 @@
-import type { PartialLiquidationCondition } from "@gearbox-protocol/liquidator-v2-config";
 import type {
-  CreditAccountData,
-  MultiCall,
-  PriceUpdate,
-  RawTx,
-} from "@gearbox-protocol/sdk";
-import type {
-  Address,
-  Hex,
-  RequiredBy,
-  SimulateContractReturnType,
-} from "viem";
+  LiquidationStrategyKind,
+  PreviewByKind,
+  SetupByKind,
+} from "@gearbox-protocol/liquidator-v2-config";
+import type { CreditAccountData } from "@gearbox-protocol/sdk";
+import type { Hex, SimulateContractReturnType } from "viem";
 
-export interface LiquidationPreview {
-  calls: readonly MultiCall[];
-  underlyingBalance: bigint;
-  /**
-   * Asset in case of partial liquidation
-   */
-  assetOut?: Address;
-  /**
-   * Asset amount in case of partial liquidation
-   */
-  amountOut?: bigint;
-  /**
-   * Falsh loan amount in case of partial liquidation
-   */
-  flashLoanAmount?: bigint;
-  /**
-   * If true, will not attempt to liquidate this account again
-   */
-  skipOnFailure?: boolean;
-}
+/**
+ * Runtime preview for a single strategy kind. Same shape that is stored in
+ * {@link OptimisticResult} (execution fields included).
+ */
+export type FullLiquidationPreview = PreviewByKind<bigint>["full"];
+export type PartialLiquidationPreview = PreviewByKind<bigint>["partial"];
+export type RWALiquidationPreview =
+  PreviewByKind<bigint>["rwa-via-stablecoins"];
 
-export interface FullLiquidationPreview extends LiquidationPreview {
-  amount: bigint;
-  minAmount: bigint;
-  rawTx: RawTx;
-}
-
-export interface PartialLiquidationPreview
-  extends RequiredBy<
-    LiquidationPreview,
-    "calls" | "assetOut" | "amountOut" | "flashLoanAmount" | "underlyingBalance"
-  > {
-  underlyingBalance: bigint;
-  priceUpdates: PriceUpdate[];
-}
-
-export interface RWALiquidationPreview extends LiquidationPreview {
-  redemptionGateway: Address;
-  priceUpdates: PriceUpdate[];
-}
+/**
+ * Union of all runtime previews (excludes `none`, which has no preview).
+ */
+export type LivePreview = PreviewByKind<bigint>[LiquidationStrategyKind];
 
 export interface ILiquidatorService {
   launch: () => Promise<void>;
@@ -66,27 +33,29 @@ export interface ILiquidatorService {
   liquidateOptimistic: (accounts: CreditAccountData[]) => Promise<void>;
 }
 
-export interface MakeLiquidatableResult {
+export type MakeLiquidatableResult<
+  K extends LiquidationStrategyKind = LiquidationStrategyKind,
+> = {
   /**
    * Re-read after making account liquidatable
    */
   account: CreditAccountData;
   snapshotId?: Hex;
-  partialLiquidationCondition?: PartialLiquidationCondition<bigint>;
-}
-
-export interface ILiquidationStrategyResult<P> {
   /**
-   * All data required to generate transaction that liquidates account
+   * Strategy-specific setup that made the account liquidatable (absent for
+   * strategies without setup, e.g. `full`)
    */
-  preview: P;
-  simulate: SimulateContractReturnType<unknown[], any, any>;
-}
+  setup?: SetupByKind<bigint>[K];
+};
 
 export interface ILiquidationStrategy<
-  P extends LiquidationPreview = LiquidationPreview,
+  K extends LiquidationStrategyKind = LiquidationStrategyKind,
 > {
   name: string;
+  /**
+   * Stable discriminator used to build the strategy-specific part of OptimisticResult
+   */
+  readonly kind: K;
 
   launch: () => Promise<void>;
   syncState: (blockNumber: bigint) => Promise<void>;
@@ -98,13 +67,15 @@ export interface ILiquidationStrategy<
    * @param ca
    * @returns evm snapshotId or underfined
    */
-  makeLiquidatable: (ca: CreditAccountData) => Promise<MakeLiquidatableResult>;
+  makeLiquidatable: (
+    ca: CreditAccountData,
+  ) => Promise<MakeLiquidatableResult<K>>;
 
   /**
    * Gathers all data required to generate transaction that liquidates account
    * @param ca
    */
-  preview: (ca: CreditAccountData) => Promise<P>;
+  preview: (ca: CreditAccountData) => Promise<PreviewByKind<bigint>[K]>;
   /**
    * Using data gathered by preview step, simulates transaction.
    * That is, nothing is actually written, but the gas is estimated, for example.
@@ -118,6 +89,6 @@ export interface ILiquidationStrategy<
    */
   simulate: (
     account: CreditAccountData,
-    preview: P,
+    preview: PreviewByKind<bigint>[K],
   ) => Promise<SimulateContractReturnType<unknown[], any, any>>;
 }

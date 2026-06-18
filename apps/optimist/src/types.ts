@@ -1,4 +1,8 @@
-import type { OptimisticResult as SharedOptimisticResult } from "@gearbox-protocol/liquidator-v2-config";
+import type {
+  LiquidationStrategyKind,
+  Numberish,
+  OptimisticResult as SharedOptimisticResult,
+} from "@gearbox-protocol/liquidator-v2-config";
 import type {
   GearboxState,
   NetworkType,
@@ -7,12 +11,14 @@ import type {
 import type { AccountsPlugin } from "@gearbox-protocol/sdk/plugins/accounts";
 import type { Address } from "viem";
 
-export interface OptimisticResult extends SharedOptimisticResult {
+export type OptimisticResult<
+  K extends LiquidationStrategyKind = LiquidationStrategyKind,
+> = SharedOptimisticResult<Numberish, K> & {
   /**
    * track id, added by optimist to result from liquidator
    */
   trackId: string;
-}
+};
 
 // liquidators produce files with this schema
 export interface OptimisticFile {

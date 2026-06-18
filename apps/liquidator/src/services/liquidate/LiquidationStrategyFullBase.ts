@@ -24,9 +24,11 @@ import type {
   MakeLiquidatableResult,
 } from "./types.js";
 
-export default abstract class LiquidationStrategyFullBase
+export default abstract class LiquidationStrategyFullBase<
+    K extends "full" | "loss-policy",
+  >
   extends AccountHelper
-  implements ILiquidationStrategy<FullLiquidationPreview>
+  implements ILiquidationStrategy<K>
 {
   @DI.Inject(DI.SDK)
   sdk!: OnchainSDK;
@@ -41,6 +43,8 @@ export default abstract class LiquidationStrategyFullBase
   logger!: ILogger;
 
   public readonly name: string;
+
+  public abstract readonly kind: K;
 
   protected abstract readonly applyLossPolicy: boolean;
 
@@ -60,7 +64,7 @@ export default abstract class LiquidationStrategyFullBase
 
   public abstract makeLiquidatable(
     ca: CreditAccountData,
-  ): Promise<MakeLiquidatableResult>;
+  ): Promise<MakeLiquidatableResult<K>>;
 
   public async preview(ca: CreditAccountData): Promise<FullLiquidationPreview> {
     try {
@@ -79,7 +83,12 @@ export default abstract class LiquidationStrategyFullBase
           applyLossPolicy: this.applyLossPolicy,
           debtOnly,
         });
-      return { ...routerCloseResult, calls, rawTx: tx };
+      return {
+        routerAmount: routerCloseResult.underlyingBalance,
+        minAmount: routerCloseResult.minAmount,
+        calls,
+        rawTx: tx,
+      };
     } catch (e) {
       throw new BaseError("cant preview full liquidation", {
         cause: e as Error,

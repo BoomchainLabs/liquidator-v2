@@ -10,7 +10,9 @@ import { replaceStorage } from "@gearbox-protocol/sdk/dev";
 import LiquidationStrategyFullBase from "./LiquidationStrategyFullBase.js";
 import type { MakeLiquidatableResult } from "./types.js";
 
-export default class LiquidationStrategyLossPolicy extends LiquidationStrategyFullBase {
+export default class LiquidationStrategyLossPolicy extends LiquidationStrategyFullBase<"loss-policy"> {
+  public readonly kind = "loss-policy" as const;
+
   protected readonly applyLossPolicy = true;
 
   constructor(name = "loss policy") {
@@ -29,7 +31,7 @@ export default class LiquidationStrategyLossPolicy extends LiquidationStrategyFu
 
   public async makeLiquidatable(
     ca: CreditAccountData,
-  ): Promise<MakeLiquidatableResult> {
+  ): Promise<MakeLiquidatableResult<"loss-policy">> {
     const { totalValue, debt, accruedInterest } = ca;
 
     // Induce bad debt on account
@@ -44,6 +46,7 @@ export default class LiquidationStrategyLossPolicy extends LiquidationStrategyFu
     }
     increaseBy = (105n * increaseBy) / 100n;
     const newDebt = debt + increaseBy;
+    const setup = { inducedDebtIncrease: increaseBy, newDebt };
 
     const by = this.sdk.tokensMeta.formatBN(cs.underlying, increaseBy, {
       symbol: true,
@@ -65,6 +68,7 @@ export default class LiquidationStrategyLossPolicy extends LiquidationStrategyFu
     return {
       account,
       snapshotId,
+      setup,
     };
   }
 

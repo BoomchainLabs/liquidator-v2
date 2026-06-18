@@ -78,9 +78,9 @@ export default abstract class AbstractLiquidator<
       calls: [],
       callsHuman: [],
       isError: true,
-      pathAmount: 0n,
       liquidatorPremium: 0n,
-      liquidatorProfit: 0n,
+      gasCost: 0n,
+      strategy: "none",
     };
   }
 

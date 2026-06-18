@@ -43,7 +43,7 @@ import type {
 
 export default class LiquidationStrategyRWAViaStablecoins
   extends AccountHelper
-  implements ILiquidationStrategy<RWALiquidationPreview>
+  implements ILiquidationStrategy<"rwa-via-stablecoins">
 {
   @DI.Inject(DI.SDK)
   sdk!: OnchainSDK;
@@ -59,6 +59,8 @@ export default class LiquidationStrategyRWAViaStablecoins
 
   @Logger("RWAStrategy")
   logger!: ILogger;
+
+  public readonly kind = "rwa-via-stablecoins" as const;
 
   #deployer: RWAContractsDeployer;
 
@@ -84,7 +86,7 @@ export default class LiquidationStrategyRWAViaStablecoins
 
   public async makeLiquidatable(
     ca: CreditAccountData,
-  ): Promise<MakeLiquidatableResult> {
+  ): Promise<MakeLiquidatableResult<"rwa-via-stablecoins">> {
     if (!this.config.optimistic) {
       throw new Error("makeLiquidatable only works in optimistic mode");
     }
@@ -244,7 +246,11 @@ export default class LiquidationStrategyRWAViaStablecoins
       if (!account) {
         throw new Error(`account ${ca.creditAccount} not found after redeem`);
       }
-      return { account, snapshotId };
+      return {
+        account,
+        snapshotId,
+        setup: { redemptionGateway: gateway, investor },
+      };
     } catch (e) {
       // Save the foundry trace BEFORE reverting the snapshot
       const decoded = await this.errorHandler.explain(e, true);
@@ -292,7 +298,6 @@ export default class LiquidationStrategyRWAViaStablecoins
 
     return {
       calls: [],
-      underlyingBalance: 0n,
       redemptionGateway,
       priceUpdates,
       skipOnFailure: false,

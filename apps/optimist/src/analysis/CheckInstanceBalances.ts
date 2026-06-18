@@ -93,8 +93,8 @@ export class CheckInstanceBalances
         result.balance,
         results,
       );
-      // Some liquidator types do not compute liquidatorProfit
-      if (results?.[0]?.liquidatorProfit) {
+      // Some liquidator types do not compute gasCost
+      if (results?.[0]?.gasCost) {
         const numLiquidations = 10;
         this.logger.debug(
           `Analyzing ${numLiquidations} least profitable liquidations for ${instance.address}`,
@@ -157,7 +157,7 @@ export class CheckInstanceBalances
   }
 
   /**
-   * Checks if balance is sufficent to perform N least profitable liquidations in a row
+   * Checks if balance is sufficent to perform N most costly liquidations in a row
    * @param balance
    * @param results
    * @param gasPrice
@@ -169,22 +169,23 @@ export class CheckInstanceBalances
     gasPrice: bigint,
     numLiquidations: number,
   ): bigint | undefined {
-    const byProfit = [...results].sort((a, b) => {
-      const aa = BigInt(a.liquidatorProfit || 0);
-      const bb = BigInt(b.liquidatorProfit || 0);
-      return aa < bb ? -1 : bb < aa ? 1 : 0;
+    const byCost = [...results].sort((a, b) => {
+      const aa = BigInt(a.gasCost || 0);
+      const bb = BigInt(b.gasCost || 0);
+      // descending: most costly first
+      return bb < aa ? -1 : aa < bb ? 1 : 0;
     });
-    const leastProfitable = byProfit.splice(
+    const mostCostly = byCost.splice(
       0,
-      Math.min(numLiquidations, byProfit.length - 1),
+      Math.min(numLiquidations, byCost.length - 1),
     );
-    const totalProfit = leastProfitable.reduce<bigint>((acc, cur) => {
-      return acc + BigInt(cur.liquidatorProfit);
+    const totalCost = mostCostly.reduce<bigint>((acc, cur) => {
+      return acc + BigInt(cur.gasCost);
     }, 0n);
     // sort remaining by tx cost
-    const mostExpensive = sortBy(byProfit, "gasUsed").pop();
+    const mostExpensive = sortBy(byCost, "gasUsed").pop();
     if (mostExpensive) {
-      const balanceAfter = totalProfit + balance;
+      const balanceAfter = balance - totalCost;
       const nextTxCost = BigInt(mostExpensive.gasUsed) * gasPrice;
       if (balanceAfter < nextTxCost) {
         return nextTxCost - balanceAfter + balance;

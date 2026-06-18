@@ -13,17 +13,10 @@ import { DI } from "../../di.js";
 import { type ILogger, Logger } from "../../log/index.js";
 import { DELEVERAGE_PERMISSIONS } from "../../utils/permissions.js";
 import type DeleverageService from "../DeleverageService.js";
-import LiquidationStrategyPartial from "./LiquidationStrategyPartial.js";
-import type {
-  ILiquidationStrategy,
-  MakeLiquidatableResult,
-  PartialLiquidationPreview,
-} from "./types.js";
+import LiquidationStrategyPartialBase from "./LiquidationStrategyPartialBase.js";
+import type { MakeLiquidatableResult } from "./types.js";
 
-export default class LiquidationStrategyDeleverage
-  extends LiquidationStrategyPartial
-  implements ILiquidationStrategy<PartialLiquidationPreview>
-{
+export default class LiquidationStrategyDeleverage extends LiquidationStrategyPartialBase<"deleverage"> {
   @DI.Inject(DI.Config)
   // @ts-expect-error
   config!: LiqduiatorConfig<DeleverageLiquidatorSchema>;
@@ -35,24 +28,19 @@ export default class LiquidationStrategyDeleverage
   @DI.Inject(DI.Deleverage)
   deleverage!: DeleverageService;
 
-  public override get name(): string {
+  public readonly kind = "deleverage" as const;
+
+  public get name(): string {
     return "deleverage";
   }
 
-  public override isApplicable(
-    _ca: CreditAccountData,
-    _optimistic: boolean,
-  ): boolean {
-    return true;
-  }
-
-  public override async makeLiquidatable(
+  public async makeLiquidatable(
     ca: CreditAccountData,
-  ): Promise<MakeLiquidatableResult> {
-    const result = await super.makeLiquidatable(ca);
+  ): Promise<MakeLiquidatableResult<"deleverage">> {
+    const core = await this.makePartialLiquidatable(ca);
     if (this.config.useProductionScanner) {
       this.logger.debug("skipping force-enabling deleverage bot");
-      return result;
+      return { ...core, setup: { ...core.setup, botForceEnabled: false } };
     }
     const { creditFacade } = this.sdk.marketRegister.findCreditManager(
       ca.creditManager,
@@ -92,7 +80,7 @@ export default class LiquidationStrategyDeleverage
     }
     await this.client.anvil.stopImpersonatingAccount({ address: ca.owner });
 
-    return result;
+    return { ...core, setup: { ...core.setup, botForceEnabled: true } };
   }
 
   protected override ignoreReservePrices(_ca: CreditAccountData): boolean {

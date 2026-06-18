@@ -31,11 +31,12 @@ import LiquidationStrategyRWAViaStablecoins from "./LiquidationStrategyRWAViaSta
 import type {
   ILiquidationStrategy,
   ILiquidatorService,
-  LiquidationPreview,
+  LivePreview,
+  MakeLiquidatableResult,
 } from "./types.js";
 
 type OptimisticStrategyResult = {
-  preview?: LiquidationPreview;
+  preview?: LivePreview;
   receipt?: TransactionReceipt;
 } & (
   | {
@@ -235,6 +236,8 @@ export default class SingularLiquidator
     const result = this.newOptimisticResult(acc);
     const start = Date.now();
     let strategyResult: OptimisticStrategyResult | undefined;
+    let strategy: ILiquidationStrategy | undefined;
+    let makeLiquidatable: MakeLiquidatableResult | undefined;
 
     // At most one strategy may apply to a given account
     // A violation indicates a misconfigured optimistic run
@@ -249,22 +252,25 @@ export default class SingularLiquidator
       const balanceBefore = await this.getBalances(acc.underlying);
 
       if (applicable.length === 1) {
-        const s = applicable[0];
-        const ml = await s.makeLiquidatable(acc);
-        result.partialLiquidationCondition = ml.partialLiquidationCondition;
+        strategy = applicable[0];
+        makeLiquidatable = await strategy.makeLiquidatable(acc);
         strategyResult = await this.#liquidateOneOptimisticStrategy(
-          ml.account,
-          s,
-          ml.snapshotId,
+          makeLiquidatable.account,
+          strategy,
+          makeLiquidatable.snapshotId,
         );
       }
 
       if (strategyResult) {
-        result.assetOut = strategyResult.preview?.assetOut;
-        result.amountOut = strategyResult.preview?.amountOut;
-        result.flashLoanAmount = strategyResult.preview?.flashLoanAmount;
+        if (strategy) {
+          // strategy/setup/preview correlate in the discriminated union; assign together
+          Object.assign(result, {
+            strategy: strategy.kind,
+            setup: makeLiquidatable!.setup,
+            preview: strategyResult.preview,
+          });
+        }
         result.calls = strategyResult.preview?.calls as MultiCall[];
-        result.pathAmount = strategyResult.preview?.underlyingBalance ?? 0n;
         result.callsHuman = this.sdk.stringifyMultiCall([
           ...(strategyResult.preview?.calls ?? []),
         ]);
@@ -277,8 +283,7 @@ export default class SingularLiquidator
           result.hfAfter = strategyResult.state.healthFactor;
           result.liquidatorPremium =
             strategyResult.balancesAfter.underlying - balanceBefore.underlying;
-          result.liquidatorProfit =
-            strategyResult.balancesAfter.eth - balanceBefore.eth;
+          result.gasCost = balanceBefore.eth - strategyResult.balancesAfter.eth;
         }
         result.gasUsed = strategyResult.receipt?.gasUsed ?? 0n;
         result.isError = !strategyResult.success;
