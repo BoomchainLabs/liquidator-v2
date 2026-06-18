@@ -1,24 +1,10 @@
 import type {
   LiquidationStrategyKind,
-  PreviewByKind,
-  SetupByKind,
+  StrategyPreviews,
+  StrategySetups,
 } from "@gearbox-protocol/liquidator-v2-config";
 import type { CreditAccountData } from "@gearbox-protocol/sdk";
 import type { Hex, SimulateContractReturnType } from "viem";
-
-/**
- * Runtime preview for a single strategy kind. Same shape that is stored in
- * {@link OptimisticResult} (execution fields included).
- */
-export type FullLiquidationPreview = PreviewByKind<bigint>["full"];
-export type PartialLiquidationPreview = PreviewByKind<bigint>["partial"];
-export type RWALiquidationPreview =
-  PreviewByKind<bigint>["rwa-via-stablecoins"];
-
-/**
- * Union of all runtime previews (excludes `none`, which has no preview).
- */
-export type LivePreview = PreviewByKind<bigint>[LiquidationStrategyKind];
 
 export interface ILiquidatorService {
   launch: () => Promise<void>;
@@ -45,7 +31,7 @@ export type MakeLiquidatableResult<
    * Strategy-specific setup that made the account liquidatable (absent for
    * strategies without setup, e.g. `full`)
    */
-  setup?: SetupByKind<bigint>[K];
+  setup?: StrategySetups<bigint>[K];
 };
 
 export interface ILiquidationStrategy<
@@ -75,7 +61,7 @@ export interface ILiquidationStrategy<
    * Gathers all data required to generate transaction that liquidates account
    * @param ca
    */
-  preview: (ca: CreditAccountData) => Promise<PreviewByKind<bigint>[K]>;
+  preview: (ca: CreditAccountData) => Promise<StrategyPreviews<bigint>[K]>;
   /**
    * Using data gathered by preview step, simulates transaction.
    * That is, nothing is actually written, but the gas is estimated, for example.
@@ -89,6 +75,6 @@ export interface ILiquidationStrategy<
    */
   simulate: (
     account: CreditAccountData,
-    preview: PreviewByKind<bigint>[K],
+    preview: StrategyPreviews<bigint>[K],
   ) => Promise<SimulateContractReturnType<unknown[], any, any>>;
 }

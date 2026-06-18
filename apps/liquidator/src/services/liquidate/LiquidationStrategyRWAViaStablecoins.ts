@@ -2,6 +2,7 @@ import { securitizeLiquidatorHelperAbi } from "@gearbox-protocol/liquidator-cont
 import type {
   FullLiquidatorSchema,
   LiqduiatorConfig,
+  RwaStrategyPreview,
 } from "@gearbox-protocol/liquidator-v2-config";
 import {
   type CreditAccountData,
@@ -35,11 +36,7 @@ import { type ILogger, Logger } from "../../log/index.js";
 import type Client from "../Client.js";
 import AccountHelper from "./AccountHelper.js";
 import { RWAContractsDeployer, resolveRWAContext } from "./rwa/index.js";
-import type {
-  ILiquidationStrategy,
-  MakeLiquidatableResult,
-  RWALiquidationPreview,
-} from "./types.js";
+import type { ILiquidationStrategy, MakeLiquidatableResult } from "./types.js";
 
 export default class LiquidationStrategyRWAViaStablecoins
   extends AccountHelper
@@ -261,7 +258,7 @@ export default class LiquidationStrategyRWAViaStablecoins
     }
   }
 
-  public async preview(ca: CreditAccountData): Promise<RWALiquidationPreview> {
+  public async preview(ca: CreditAccountData): Promise<RwaStrategyPreview> {
     const ctx = resolveRWAContext(this.sdk, ca, this.logger);
     const redemptionGateway = ctx?.gateway;
     if (!redemptionGateway) {
@@ -306,7 +303,7 @@ export default class LiquidationStrategyRWAViaStablecoins
 
   public async simulate(
     account: CreditAccountData,
-    preview: RWALiquidationPreview,
+    preview: RwaStrategyPreview,
   ): Promise<SimulateContractReturnType<unknown[], any, any>> {
     const result = await this.client.pub.simulateContract({
       account: this.client.account,

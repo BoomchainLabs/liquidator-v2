@@ -1,6 +1,7 @@
 import type {
   CommonSchema,
   LiqduiatorConfig,
+  PartialStrategyPreview,
   PartialStrategySetup,
 } from "@gearbox-protocol/liquidator-v2-config";
 import type { CreditAccountData, OnchainSDK } from "@gearbox-protocol/sdk";
@@ -15,11 +16,7 @@ import {
   type IPartialLiquidatorContract,
   PartialContractsDeployer,
 } from "./partial/index.js";
-import type {
-  ILiquidationStrategy,
-  MakeLiquidatableResult,
-  PartialLiquidationPreview,
-} from "./types.js";
+import type { ILiquidationStrategy, MakeLiquidatableResult } from "./types.js";
 
 /**
  * Shared logic for partial and deleverage strategies, generic over the kind so
@@ -134,7 +131,7 @@ export default abstract class LiquidationStrategyPartialBase<
 
   public async preview(
     ca: CreditAccountData,
-  ): Promise<PartialLiquidationPreview> {
+  ): Promise<PartialStrategyPreview<bigint>> {
     const cm = this.sdk.marketRegister.findCreditManager(ca.creditManager);
     const priceUpdates = await this.sdk.accounts.getOnDemandPriceUpdates(
       ca,
@@ -193,7 +190,7 @@ export default abstract class LiquidationStrategyPartialBase<
 
   public async simulate(
     account: CreditAccountData,
-    preview: PartialLiquidationPreview,
+    preview: PartialStrategyPreview<bigint>,
   ): Promise<SimulateContractReturnType<unknown[], any, any>> {
     const liquidator = this.#liquidatorForCA(account);
     if (!liquidator) {

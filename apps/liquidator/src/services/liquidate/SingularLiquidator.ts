@@ -1,8 +1,10 @@
 import type {
   CommonSchema,
   FullLiquidatorSchema,
+  LiquidationStrategyKind,
   OptimisticResult,
   PartialLiquidatorSchema,
+  StrategyPreviews,
 } from "@gearbox-protocol/liquidator-v2-config";
 import {
   AddressMap,
@@ -31,12 +33,11 @@ import LiquidationStrategyRWAViaStablecoins from "./LiquidationStrategyRWAViaSta
 import type {
   ILiquidationStrategy,
   ILiquidatorService,
-  LivePreview,
   MakeLiquidatableResult,
 } from "./types.js";
 
 type OptimisticStrategyResult = {
-  preview?: LivePreview;
+  preview?: StrategyPreviews<bigint>[LiquidationStrategyKind];
   receipt?: TransactionReceipt;
 } & (
   | {

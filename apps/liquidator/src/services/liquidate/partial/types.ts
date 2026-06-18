@@ -1,3 +1,4 @@
+import type { PartialStrategyPreview } from "@gearbox-protocol/liquidator-v2-config";
 import type {
   CreditAccountData,
   CreditSuite,
@@ -5,8 +6,6 @@ import type {
   PriceUpdate,
 } from "@gearbox-protocol/sdk";
 import type { Address, SimulateContractReturnType } from "viem";
-
-import type { PartialLiquidationPreview } from "../types.js";
 
 export interface OptimalPartialLiquidation {
   tokenOut: Address;
@@ -68,7 +67,7 @@ export interface IPartialLiquidatorContract {
    */
   partialLiquidateAndConvert: (
     account: CreditAccountData,
-    preview: PartialLiquidationPreview,
+    preview: PartialStrategyPreview<bigint>,
   ) => Promise<SimulateContractReturnType<unknown[], any, any>>;
 }
 

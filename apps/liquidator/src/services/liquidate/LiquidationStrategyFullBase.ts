@@ -1,5 +1,6 @@
 import type {
   FullLiquidatorSchema,
+  FullStrategyPreview,
   LiqduiatorConfig,
 } from "@gearbox-protocol/liquidator-v2-config";
 import {
@@ -18,11 +19,7 @@ import { errorAbis, isRevertedWith } from "../../errors/index.js";
 import { type ILogger, Logger } from "../../log/index.js";
 import type Client from "../Client.js";
 import AccountHelper from "./AccountHelper.js";
-import type {
-  FullLiquidationPreview,
-  ILiquidationStrategy,
-  MakeLiquidatableResult,
-} from "./types.js";
+import type { ILiquidationStrategy, MakeLiquidatableResult } from "./types.js";
 
 export default abstract class LiquidationStrategyFullBase<
     K extends "full" | "loss-policy",
@@ -66,7 +63,9 @@ export default abstract class LiquidationStrategyFullBase<
     ca: CreditAccountData,
   ): Promise<MakeLiquidatableResult<K>>;
 
-  public async preview(ca: CreditAccountData): Promise<FullLiquidationPreview> {
+  public async preview(
+    ca: CreditAccountData,
+  ): Promise<FullStrategyPreview<bigint>> {
     try {
       const ignoreReservePrices = !this.config.updateReservePrices;
       const cm = this.sdk.marketRegister.findCreditManager(ca.creditManager);
@@ -98,7 +97,7 @@ export default abstract class LiquidationStrategyFullBase<
 
   public async simulate(
     account: CreditAccountData,
-    preview: FullLiquidationPreview,
+    preview: FullStrategyPreview,
   ): Promise<SimulateContractReturnType<unknown[], any, any>> {
     const { args } = decodeFunctionData({
       abi: iCreditFacadeV310Abi,

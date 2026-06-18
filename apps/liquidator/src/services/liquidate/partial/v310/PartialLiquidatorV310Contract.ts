@@ -1,4 +1,5 @@
 import { iPartialLiquidatorAbi } from "@gearbox-protocol/liquidator-contracts/abi";
+import type { PartialStrategyPreview } from "@gearbox-protocol/liquidator-v2-config";
 import type {
   CreditAccountData,
   CreditSuite,
@@ -19,7 +20,6 @@ import {
   type Transport,
 } from "viem";
 import { errorAbis } from "../../../../errors/index.js";
-import type { PartialLiquidationPreview } from "../../types.js";
 import { AbstractPartialLiquidatorContract } from "../AbstractPartialLiquidatorContract.js";
 import type {
   OptimalPartialLiquidation,
@@ -140,7 +140,7 @@ export default abstract class PartialLiquidatorV310Contract extends AbstractPart
 
   public async partialLiquidateAndConvert(
     account: CreditAccountData,
-    preview: PartialLiquidationPreview,
+    preview: PartialStrategyPreview<bigint>,
   ): Promise<SimulateContractReturnType<unknown[], any, any>> {
     return this.client.pub.simulateContract({
       account: this.client.account,

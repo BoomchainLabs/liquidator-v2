@@ -149,7 +149,7 @@ export interface RwaStrategySetup {
  * Maps each {@link LiquidationStrategyKind} to its preview shape.
  * `none` has no preview.
  */
-export interface PreviewByKind<N extends Numberish = Numberish> {
+export interface StrategyPreviews<N extends Numberish = Numberish> {
   full: FullStrategyPreview<N>;
   "loss-policy": FullStrategyPreview<N>;
   partial: PartialStrategyPreview<N>;
@@ -162,7 +162,7 @@ export interface PreviewByKind<N extends Numberish = Numberish> {
  * Maps each {@link LiquidationStrategyKind} to its `setup` shape (how the account
  * was made liquidatable). `full`/`none` have no setup.
  */
-export interface SetupByKind<N extends Numberish = Numberish> {
+export interface StrategySetups<N extends Numberish = Numberish> {
   full: never;
   "loss-policy": LossPolicyStrategySetup<N>;
   partial: PartialStrategySetup<N>;
@@ -268,11 +268,11 @@ type OptimisticResultByKind<N extends Numberish = Numberish> = {
     /**
      * Strategy-specific setup that made the account liquidatable.
      */
-    setup?: SetupByKind<N>[K];
+    setup?: StrategySetups<N>[K];
     /**
      * Strategy-specific liquidation preview.
      */
-    preview?: PreviewByKind<N>[K];
+    preview?: StrategyPreviews<N>[K];
   };
 };
 

@@ -2,6 +2,7 @@ import type {
   DeleverageLiquidatorSchema,
   LiqduiatorConfig,
   PartialLiquidatorSchema,
+  PartialStrategyPreview,
 } from "@gearbox-protocol/liquidator-v2-config";
 import type {
   CreditAccountData,
@@ -17,7 +18,6 @@ import { DI } from "../../../di.js";
 import type { ILogger } from "../../../log/index.js";
 import type Client from "../../Client.js";
 import type DeleverageService from "../../DeleverageService.js";
-import type { PartialLiquidationPreview } from "../types.js";
 import type {
   IPartialLiquidatorContract,
   OptimalPartialLiquidation,
@@ -196,7 +196,7 @@ export abstract class AbstractPartialLiquidatorContract
 
   public abstract partialLiquidateAndConvert(
     account: CreditAccountData,
-    preview: PartialLiquidationPreview,
+    preview: PartialStrategyPreview<bigint>,
   ): Promise<SimulateContractReturnType<unknown[], any, any>>;
 
   /**
