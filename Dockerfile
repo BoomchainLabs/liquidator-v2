@@ -61,6 +61,7 @@ FROM gcr.io/distroless/nodejs24-debian13 AS liquidator
 ARG PACKAGE_VERSION
 ENV PACKAGE_VERSION=${PACKAGE_VERSION:-dev}
 LABEL org.opencontainers.image.version="${PACKAGE_VERSION}"
+LABEL org.opencontainers.image.source=https://github.com/Gearbox-protocol/liquidator-v2
 
 WORKDIR /app
 COPY --from=liquidator-prod /app/node_modules /app/node_modules
@@ -81,6 +82,7 @@ ENV NODE_ENV=production
 ENV OPTIMIST_VERSION=${OPTIMIST_VERSION:-dev}
 ENV OPTIMIST_TAG=${OPTIMIST_TAG:-dev}
 LABEL org.opencontainers.image.version="${OPTIMIST_VERSION}"
+LABEL org.opencontainers.image.source=https://github.com/Gearbox-protocol/liquidator-v2
 
 USER 1000:1000
 WORKDIR /app
