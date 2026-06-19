@@ -1,0 +1,10 @@
+extends: ./alias.base.yaml
+liquidators:
+  - id: ts
+    env:
+      <<: *env
+      NAME: "ts"
+  - id: go
+    env:
+      <<: *env
+      NAME: "go"

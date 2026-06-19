@@ -171,16 +171,20 @@ export const CommonSchema = z.object({
     env: "LIQUIDATOR_ADDRESS",
   }),
   /**
-   * If balance drops before this value - we should send notification
+   * Minimum executor gas budget, in gas units. The required balance to send a
+   * notification is computed as `minBalanceGas * currentGasPrice`.
    */
-  minBalance: z.coerce
+  minBalanceGas: z.coerce
     .bigint()
     .positive()
-    .default(500000000000000000n)
+    // At some point on Mainnet there were 40 accounts
+    // It costed ~80M gas to deleverage all of them, deleverage being the most expensive operation
+    .default(85_000_000n)
     .register(zommandRegistry, {
-      flags: "--min-balance <balance>",
-      description: "Minimum balance to liquidate",
-      env: "MIN_BALANCE",
+      flags: "--min-balance-gas <gas>",
+      description:
+        "Minimum executor gas budget (in gas units); required balance = this * current gas price",
+      env: "MIN_BALANCE_GAS",
     }),
   /**
    * Filter out all accounts with HF >= threshold during scan stage
@@ -338,6 +342,16 @@ export const CommonSchema = z.object({
     flags: "--keep-assets <assets...>",
     description: "List of assets to keep on account after liquidation",
     env: "KEEP_ASSETS",
+  }),
+  /**
+   * Address that receives the liquidation premium and leftover underlying.
+   * Defaults to the executor address when unset.
+   */
+  premiumReceiver: addressLike().optional().register(zommandRegistry, {
+    flags: "--premium-receiver <address>",
+    description:
+      "Address that receives the liquidation premium and leftover underlying (defaults to executor address)",
+    env: "PREMIUM_RECEIVER",
   }),
 
   /**

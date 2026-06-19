@@ -1,0 +1,24 @@
+network: Mainnet
+containerOutDir: /Users/doomsower/projects/gearbox/liquidator-v2/apps/optimist/output
+hostOutDir: /Users/doomsower/projects/gearbox/liquidator-v2/apps/optimist/output
+originRPC: "${sm.ANVIL_NODE.chainstack_ethereum}"
+logLevel: debug
+ghcrCredentials:
+  username: "${sm.ANVIL_NODE.githubUser}"
+  password: "${sm.ANVIL_NODE.githubToken}"
+# s3Bucket:
+# s3Prefix:
+# grafanaDashboardURL:
+extraMessage: "[LOCAL-DEV]"
+
+liquidators:
+  - id: ts
+    name: "TS Full"
+    group: "full"
+    imageTag: beta
+    rpc: "${sm.ANVIL_NODE.chainstack_ethereum}"
+    env:
+      LIQUIDATOR_ADDRESS: "0x185E17894F5716753F857129C98E2BCCEd7e36FD"
+    setup:
+      emergencyMode: true
+      zeroLT: true

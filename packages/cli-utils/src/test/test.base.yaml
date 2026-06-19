@@ -1,0 +1,16 @@
+foo: bar
+text: hello
+deep:
+  field1: value1
+  field2: value2
+  very:
+    deep:
+      field: value
+    some: "${THING}"
+    arr:
+      - a: b
+      - c: d
+list:
+  - a
+  - b
+  - c

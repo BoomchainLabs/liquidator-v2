@@ -1,0 +1,18 @@
+foo: bar
+text: Hello world
+deep:
+  field1: 11
+  field2: value2
+  field3: value3
+  very:
+    deep:
+      field: empty
+    other: 4
+    some: thing
+    arr:
+      - x: 4
+      - y: 5
+list:
+  - x
+  - y
+  - z

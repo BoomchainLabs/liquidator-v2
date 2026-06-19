@@ -8,7 +8,6 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   target: "node24",
-  outExtension: () => ({ js: ".mjs" }),
   external: [
     "zod",
     "viem",

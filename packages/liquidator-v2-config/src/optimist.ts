@@ -1,15 +1,120 @@
-import type { MultiCall } from "@gearbox-protocol/sdk";
+import type { MultiCall, PriceUpdate, RawTx } from "@gearbox-protocol/sdk";
 import type { Address } from "viem";
-
-export interface PriceUpdate {
-  token: Address;
-  data: string;
-  reserve: boolean;
-}
 
 export type Numberish = number | string | bigint;
 
-export interface PartialLiquidationCondition<N extends Numberish = Numberish> {
+/**
+ * Discriminator for the liquidation strategy that produced an {@link OptimisticResult}.
+ * `none` is used when no strategy was applicable, or an error occurred before a
+ * strategy could be selected.
+ */
+export type LiquidationStrategyKind =
+  | "full"
+  | "loss-policy"
+  | "rwa-via-stablecoins"
+  | "partial"
+  | "deleverage"
+  | "none";
+
+/**
+ * Preview data shared by full and loss-policy strategies (single full liquidation
+ * routed through the pathfinder). Carries the execution-only fields (`calls`,
+ * `rawTx`, `skipOnFailure`) used to build and send the liquidation tx; these are
+ * stored as-is in {@link OptimisticResult}.
+ */
+export interface FullStrategyPreview<N extends Numberish = Numberish> {
+  /**
+   * Router's pre-tx estimate (`routerCloseResult.underlyingBalance`) of how much
+   * underlying the account holds after all non-underlying collateral is swapped to
+   * underlying: existing underlying plus the amount received from swaps.
+   */
+  routerAmount: N;
+  /**
+   * Minimum acceptable underlying amount out after applying slippage.
+   */
+  minAmount?: N;
+  /**
+   * Multicalls used to liquidate the account.
+   */
+  calls: readonly MultiCall[];
+  /**
+   * Raw liquidation transaction produced by the pathfinder.
+   */
+  rawTx: RawTx;
+  /**
+   * If true, will not attempt to liquidate this account again.
+   */
+  skipOnFailure?: boolean;
+}
+
+/**
+ * Preview data shared by partial and deleverage strategies. Carries the
+ * execution-only fields (`calls`, `priceUpdates`, `skipOnFailure`) used to build
+ * and send the liquidation tx; these are stored as-is in {@link OptimisticResult}.
+ */
+export interface PartialStrategyPreview<N extends Numberish = Numberish> {
+  /**
+   * Token taken out of the account in exchange for repaying part of the debt.
+   */
+  assetOut: Address;
+  /**
+   * Amount of {@link assetOut} taken out of the account.
+   */
+  amountOut: N;
+  /**
+   * Flash loan amount used to repay the debt during partial liquidation.
+   */
+  flashLoanAmount: N;
+  /**
+   * Partial-liquidator contract's previewed profit in underlying token
+   * (`previewPartialLiquidation().profit`).
+   */
+  previewedProfit: N;
+  /**
+   * On-demand (redstone) price updates included in the liquidation call.
+   */
+  priceUpdates: PriceUpdate[];
+  /**
+   * Multicalls used to liquidate the account.
+   */
+  calls: readonly MultiCall[];
+  /**
+   * If true, will not attempt to liquidate this account again.
+   */
+  skipOnFailure?: boolean;
+}
+
+export interface RwaStrategyPreview {
+  /**
+   * Securitize redemption gateway used during liquidation.
+   */
+  redemptionGateway: Address;
+  /**
+   * On-demand (redstone) price updates included in the liquidation call.
+   */
+  priceUpdates: PriceUpdate[];
+  /**
+   * Multicalls used to liquidate the account.
+   */
+  calls: readonly MultiCall[];
+  /**
+   * If true, will not attempt to liquidate this account again.
+   */
+  skipOnFailure?: boolean;
+}
+
+export interface LossPolicyStrategySetup<N extends Numberish = Numberish> {
+  /**
+   * Amount the account debt was artificially increased by.
+   */
+  inducedDebtIncrease: N;
+  /**
+   * Resulting account debt after the artificial increase.
+   */
+  newDebt: N;
+}
+
+export interface PartialStrategySetup<N extends Numberish = Numberish> {
   /**
    * Mapping token address -> [old LT, new LT]
    */
@@ -20,10 +125,56 @@ export interface PartialLiquidationCondition<N extends Numberish = Numberish> {
   hfNew: N;
 }
 
+export interface DeleverageStrategySetup<N extends Numberish = Numberish>
+  extends PartialStrategySetup<N> {
+  /**
+   * True when deleverage bot permissions were force-enabled on the account
+   * (false when relying on the production scanner).
+   */
+  botForceEnabled: boolean;
+}
+
+export interface RwaStrategySetup {
+  /**
+   * Securitize redemption gateway used to redeem the RWA collateral.
+   */
+  redemptionGateway: Address;
+  /**
+   * Investor account that owns the RWA position being redeemed.
+   */
+  investor?: Address;
+}
+
 /**
- * Optimistic liquidation result format, shared by all liquidators
+ * Maps each {@link LiquidationStrategyKind} to its preview shape.
+ * `none` has no preview.
  */
-export interface OptimisticResult<N extends Numberish = Numberish> {
+export interface StrategyPreviews<N extends Numberish = Numberish> {
+  full: FullStrategyPreview<N>;
+  "loss-policy": FullStrategyPreview<N>;
+  partial: PartialStrategyPreview<N>;
+  deleverage: PartialStrategyPreview<N>;
+  "rwa-via-stablecoins": RwaStrategyPreview;
+  none: never;
+}
+
+/**
+ * Maps each {@link LiquidationStrategyKind} to its `setup` shape (how the account
+ * was made liquidatable). `full`/`none` have no setup.
+ */
+export interface StrategySetups<N extends Numberish = Numberish> {
+  full: never;
+  "loss-policy": LossPolicyStrategySetup<N>;
+  partial: PartialStrategySetup<N>;
+  deleverage: DeleverageStrategySetup<N>;
+  "rwa-via-stablecoins": RwaStrategySetup;
+  none: never;
+}
+
+/**
+ * Fields shared by every {@link OptimisticResult}, independent of strategy.
+ */
+export interface OptimisticResultBase<N extends Numberish = Numberish> {
   /**
    * Credit Manager address
    */
@@ -46,18 +197,18 @@ export interface OptimisticResult<N extends Numberish = Numberish> {
    */
   calls?: MultiCall[] | null;
   /**
-   * Estimated amount which was computed in pathfinder
-   */
-  pathAmount: N;
-  /**
-   * How much tokens liquidator got on its account for the liquidation
-   * liquidatorPremium = underlyingBalanceAfterLiquidation - underlyingBalanceBeforeLiquidation
+   * Realized change in the premium receiver's underlying token balance across the
+   * liquidation tx (`underlyingAfter - underlyingBefore`). This is the underlying
+   * the liquidator actually pocketed. Measured (not estimated).
    */
   liquidatorPremium: N;
   /**
-   * Difference between liquidator ETH balance before and after liquidation and swapping of underlying back to ETH
+   * Native token (ETH) spent by the executor across the real liquidation tx
+   * (`ethBefore - ethAfter`), stored as a positive value. In practice this is the
+   * gas paid, since the liquidation premium is received in the underlying token
+   * rather than in native token (no underlying->native swap happens here).
    */
-  liquidatorProfit: N;
+  gasCost: N;
   /**
    * True if errors accrued
    */
@@ -97,27 +248,42 @@ export interface OptimisticResult<N extends Numberish = Numberish> {
    */
   traceFile?: string;
   /**
-   * Changes made to enable partial liquidation of account
-   */
-  partialLiquidationCondition?: PartialLiquidationCondition<N>;
-  /**
-   * Asset in case of partial liquidation
-   */
-  assetOut?: Address | null;
-  /**
-   * Asset amount in case of partial liquidation
-   */
-  amountOut?: N | null;
-  /**
-   * Falsh loan amount in case of partial liquidation
-   */
-  flashLoanAmount?: N | null;
-  /**
-   * On-demand (redstone) price updates in liquidation call
-   */
-  priceUpdates?: PriceUpdate[] | null;
-  /**
    * In case when account are liquidated in batches
    */
   batchId?: string;
+  /**
+   * Track identifier. Defaults to the strategy kind in the liquidator; the
+   * optimistic runner (apps/optimist) overwrites it with the actual track id,
+   * so several tracks can share one strategy.
+   */
+  trackId: string;
 }
+
+type OptimisticResultByKind<N extends Numberish = Numberish> = {
+  [K in LiquidationStrategyKind]: OptimisticResultBase<N> & {
+    /**
+     * Strategy that produced this result.
+     */
+    strategy: K;
+    /**
+     * Strategy-specific setup that made the account liquidatable.
+     */
+    setup?: StrategySetups<N>[K];
+    /**
+     * Strategy-specific liquidation preview.
+     */
+    preview?: StrategyPreviews<N>[K];
+  };
+};
+
+/**
+ * Optimistic liquidation result format, shared by all liquidators.
+ *
+ * With the default `K` this is a discriminated union over `strategy`, so narrowing
+ * on `result.strategy` refines `setup`/`preview`. Pass a concrete `K` (e.g.
+ * `OptimisticResult<bigint, "partial">`) to pin one variant.
+ */
+export type OptimisticResult<
+  N extends Numberish = Numberish,
+  K extends LiquidationStrategyKind = LiquidationStrategyKind,
+> = OptimisticResultByKind<N>[K];
