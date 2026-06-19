@@ -15,6 +15,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/liquidator/package.json apps/liquidator/
 COPY apps/optimist/package.json apps/optimist/
 COPY packages/liquidator-v2-config/package.json packages/liquidator-v2-config/
+COPY packages/cli-utils/package.json packages/cli-utils/
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     corepack enable \
@@ -39,6 +40,7 @@ COPY --from=build /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml
 COPY --from=build /app/apps/liquidator/package.json /app/apps/liquidator/package.json
 COPY --from=build /app/apps/optimist/package.json /app/apps/optimist/package.json
 COPY --from=build /app/packages/liquidator-v2-config/package.json /app/packages/liquidator-v2-config/package.json
+COPY --from=build /app/packages/cli-utils/package.json /app/packages/cli-utils/package.json
 COPY --from=build /app/apps/liquidator/build/ /app/apps/liquidator/build
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \

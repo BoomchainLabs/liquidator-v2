@@ -21,7 +21,7 @@
     "@aws-sdk/client-secrets-manager": "^3.1068.0",
     "@aws-sdk/client-ssm": "^3.1068.0",
     "@commander-js/extra-typings": "^14.0.0",
-    "@gearbox-protocol/cli-utils": "^6.15.0",
+    "@gearbox-protocol/cli-utils": "workspace:*",
     "@gearbox-protocol/sdk": "^14.11.1",
     "@types/deepmerge": "^2.2.3",
     "@types/dockerode": "^4.0.1",

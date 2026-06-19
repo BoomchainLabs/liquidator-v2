@@ -22,7 +22,7 @@
     "typecheck:ci": "tsc --noEmit"
   },
   "dependencies": {
-    "@gearbox-protocol/cli-utils": "^6.16.2",
+    "@gearbox-protocol/cli-utils": "workspace:*",
     "zod": "^4.4.3"
   },
   "peerDependencies": {

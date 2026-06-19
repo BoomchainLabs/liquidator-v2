@@ -1,0 +1,9 @@
+rpc: "${RPC_URL}"
+providers:
+  - "${RPC_URL}"
+  - id: 1
+    url: "${sm.RPC_URL1}"
+  - id: 2
+    url: "${sm.RPC_URL2}"
+fallback: "${sm.RPC_URL2}"
+deep: "${sm.SOME.DEEP.KEY}"

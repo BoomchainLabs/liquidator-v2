@@ -1,0 +1,16 @@
+extends: ./test.base.yaml
+text: "Hello ${TEXT}"
+deep:
+  field1: 11
+  field3: value3
+  very:
+    deep:
+      field: empty
+    other: 4
+    arr:
+      - x: 4
+      - y: 5
+list:
+  - x
+  - y
+  - z
