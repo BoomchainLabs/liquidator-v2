@@ -58,8 +58,9 @@ jobs:
       - name: Publish packages
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
+          NPM_TAG="${{ steps.semantic.outputs.new_release_channel }}"
           pnpm -r exec npm version ${{ steps.semantic.outputs.new_release_version }} --no-git-tag-version --allow-same-version
-          pnpm -r publish --no-git-checks --access public --provenance
+          pnpm -r publish --no-git-checks --access public --provenance --tag "${NPM_TAG:-latest}"
         # env:
         #   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
