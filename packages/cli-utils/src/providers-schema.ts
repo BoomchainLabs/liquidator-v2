@@ -2,7 +2,7 @@ import { SUPPORTED_NETWORKS } from "@gearbox-protocol/sdk";
 import { z } from "zod/v4";
 import { CensoredString } from "./CensoredString.js";
 import { CensoredURL } from "./CensoredURL.js";
-import { stringArrayLike } from "./schema-primitives.js";
+import { stringArrayLike } from "./schemas/schema-primitives.js";
 import { zommandRegistry } from "./Zommand.js";
 
 export const RpcProvider = z.enum([

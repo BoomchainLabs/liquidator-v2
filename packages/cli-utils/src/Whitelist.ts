@@ -1,9 +1,8 @@
-import { setInterval } from "node:timers";
 import type { ILogger, NetworkType } from "@gearbox-protocol/sdk";
 import { AddressMap } from "@gearbox-protocol/sdk";
 import { z } from "zod/v4";
 import { fetchRetry } from "./fetchRetry.js";
-import { WhitelistItemSchema } from "./whitelist-schema.js";
+import { WhitelistItemSchema } from "./schemas/whitelist-schema.js";
 
 const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -28,7 +27,7 @@ export class Whitelist {
   readonly #logger?: ILogger;
 
   #items = new AddressMap<WhitelistItemSchema>();
-  #refreshInterval?: NodeJS.Timeout;
+  #refreshInterval?: number;
 
   constructor({ url, network, logger }: WhitelistOptions) {
     this.#url = url;
@@ -49,7 +48,7 @@ export class Whitelist {
       this.#refresh().catch(e => {
         this.#logger?.warn(`unexpected whitelist refresh error: ${e}`);
       });
-    }, REFRESH_INTERVAL_MS);
+    }, REFRESH_INTERVAL_MS) as unknown as number;
   }
 
   /** Stops the refresh timer. */

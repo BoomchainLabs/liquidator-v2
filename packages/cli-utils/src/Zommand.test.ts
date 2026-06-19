@@ -3,7 +3,10 @@ import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod/v4";
 import { compressObject } from "./compressedConfig.js";
-import { boolLike, optionalAddressArrayLike } from "./schema-primitives.js";
+import {
+  boolLike,
+  optionalAddressArrayLike,
+} from "./schemas/schema-primitives.js";
 import { Zommand, zommandRegistry } from "./Zommand.js";
 
 const __filename = fileURLToPath(import.meta.url);

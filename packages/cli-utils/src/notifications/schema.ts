@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
 import { CensoredString } from "../CensoredString.js";
-import { boolLike } from "../schema-primitives.js";
+import { boolLike } from "../schemas/schema-primitives.js";
 
 export const TelegramConfig = z.object({
   type: z.literal("telegram"),
