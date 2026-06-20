@@ -22,7 +22,7 @@
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.1069.0",
     "@gearbox-protocol/cli-utils": "workspace:*",
-    "@gearbox-protocol/liquidator-contracts": "^v1.36.0-securitize.1",
+    "@gearbox-protocol/liquidator-contracts": "workspace:*",
     "@gearbox-protocol/sdk": "14.10.2",
     "@types/node": "^25.9.3",
     "@vlad-yakovlev/telegram-md": "^2.1.0",

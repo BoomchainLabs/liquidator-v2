@@ -1,0 +1,48 @@
+{
+  "name": "@gearbox-protocol/liquidator-contracts",
+  "description": "Complimentary contracts for gearbox liquidator",
+  "version": "0.0.0-semantic-release",
+  "homepage": "https://gearbox.fi",
+  "keywords": [
+    "gearbox"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gearbox-protocol/liquidator-v2.git"
+  },
+  "license": "BUSL-1.1",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    "./abi": {
+      "types": "./dist/abi/index.d.ts",
+      "default": "./dist/abi/index.js"
+    },
+    "./bytecode": {
+      "types": "./dist/bytecode/index.d.ts",
+      "default": "./dist/bytecode/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepack": "tsup",
+    "typecheck:ci": "tsc --noEmit",
+    "generate": "tsx ./scripts/generate.mts"
+  },
+  "peerDependencies": {
+    "viem": "2.52.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "@wagmi/cli": "^2.3.2",
+    "tsup": "^8.5.1",
+    "tsx": "4.22.3",
+    "typescript": "^6.0.3",
+    "viem": "2.52.2"
+  }
+}
