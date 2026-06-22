@@ -3,7 +3,11 @@ import { NetworkType } from "@gearbox-protocol/sdk";
 import { z } from "zod/v4";
 import { addressLike } from "./schema-primitives.js";
 
-export const WhitelistItemsSchema = z.object({
+/**
+ * Schema for editing whitelist items.
+ * We can input multiple addresses at once.
+ */
+export const whitelistItemsSchema = z.object({
   network: NetworkType,
   addresses: z.array(addressLike()).min(1),
   reason: z.string().default(""),
@@ -11,9 +15,12 @@ export const WhitelistItemsSchema = z.object({
   expiresAt: z.number().optional(),
 });
 
-export type WhitelistItemsSchema = z.infer<typeof WhitelistItemsSchema>;
+export type WhitelistItems = z.infer<typeof whitelistItemsSchema>;
 
-export const WhitelistItemSchema = z.object({
+/**
+ * Schema for a single whitelist item as returned by the API
+ */
+export const whitelistItemSchema = z.object({
   network: NetworkType,
   category: z.string(),
   address: addressLike(),
@@ -24,4 +31,16 @@ export const WhitelistItemSchema = z.object({
   expiresAt: z.number().optional(),
 });
 
-export type WhitelistItemSchema = z.infer<typeof WhitelistItemSchema>;
+export type WhitelistItem = z.infer<typeof whitelistItemSchema>;
+
+/**
+ * Subset of {@link WhitelistItemSchema} actually consumed by client apps.
+ */
+export const clientWhitelistItemSchema = whitelistItemSchema.pick({
+  address: true,
+  reason: true,
+  expiresAt: true,
+  contractType: true,
+});
+
+export type ClientWhitelistItem = z.infer<typeof clientWhitelistItemSchema>;

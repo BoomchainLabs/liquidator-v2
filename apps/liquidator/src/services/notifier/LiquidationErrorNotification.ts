@@ -16,6 +16,7 @@ export class LiquidationErrorNotification
   readonly #error: string;
   readonly #callsHuman?: string[];
   readonly #strategyName: string;
+  readonly #whitelistReason?: string;
 
   constructor(
     sdk: OnchainSDK,
@@ -23,6 +24,7 @@ export class LiquidationErrorNotification
     strategyName: string,
     error: string,
     callsHuman?: string[],
+    whitelistReason?: string,
   ) {
     super(sdk, ca);
     this.#strategyName = strategyName;
@@ -30,6 +32,7 @@ export class LiquidationErrorNotification
     this.#error =
       censored.length > 128 ? `${censored.slice(0, 128)}...` : censored;
     this.#callsHuman = callsHuman;
+    this.#whitelistReason = whitelistReason;
   }
 
   public messageFor(
@@ -45,16 +48,26 @@ export class LiquidationErrorNotification
     };
   }
 
+  get #whitelistPlain(): string {
+    return this.#whitelistReason !== undefined
+      ? `\n⚠️ whitelisted: ${this.#whitelistReason}`
+      : "";
+  }
+
   get #plain(): string {
     return `❌ [${this.networkType}] ${this.#strategyName} liquidation failed for account ${this.caPlain} ${this.withHF} in credit manager ${this.cmPlain}      
-Error: ${this.#error}
+Error: ${this.#error}${this.#whitelistPlain}
 Path used:
 ${joinCalls.plain(this.#callsHuman)}`;
   }
 
   get #markdown(): Markdown {
+    const whitelist =
+      this.#whitelistReason !== undefined
+        ? md`\n⚠️ whitelisted: ${this.#whitelistReason}`
+        : "";
     return md`❌ [${this.networkType}] ${this.#strategyName} liquidation failed for account ${this.caMd} ${this.withHF} in credit manager ${this.cmMd}
-Error: ${md.inlineCode(this.#error)}
+Error: ${md.inlineCode(this.#error)}${whitelist}
 Path used:
 ${joinCalls.md(this.#callsHuman)}`;
   }

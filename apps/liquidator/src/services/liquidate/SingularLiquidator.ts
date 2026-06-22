@@ -19,9 +19,11 @@ import {
   type Hex,
   type TransactionReceipt,
 } from "viem";
+import { DI } from "../../di.js";
 import type { ExplainedError } from "../../errors/index.js";
 import { TransactionRevertedError } from "../../errors/index.js";
 import { LoggerFactory } from "../../log/index.js";
+import type { CreditAccountWhitelist } from "../CreditAccountWhitelist.js";
 import {
   LiquidationErrorNotification,
   LiquidationStartNotification,
@@ -57,6 +59,9 @@ export default class SingularLiquidator
   extends AbstractLiquidator<CommonSchema>
   implements ILiquidatorService
 {
+  @DI.Inject(DI.Whitelist)
+  whitelist!: CreditAccountWhitelist;
+
   #strategies: ILiquidationStrategy[] = [];
 
   constructor() {
@@ -173,6 +178,7 @@ export default class SingularLiquidator
     }
     let pathHuman: string[] | undefined;
     let skipOnFailure = false;
+    const whitelistReason = this.whitelist.match(ca, "soft")?.reason;
 
     this.notifier.notify(new LiquidationStartNotification(this.sdk, ca));
 
@@ -215,6 +221,7 @@ export default class SingularLiquidator
             s.name,
             decoded.shortMessage,
             pathHuman,
+            whitelistReason,
           ),
         );
       }

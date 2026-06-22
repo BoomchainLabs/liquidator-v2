@@ -14,6 +14,7 @@ const Injectables = {
   Scanner: "Scanner",
   SDK: "SDK",
   Transport: "Transport",
+  Whitelist: "Whitelist",
 } as const;
 
 export const DI = Object.assign(
@@ -31,6 +32,7 @@ export const DI = Object.assign(
     Scanner: [];
     SDK: [];
     Transport: [];
+    Whitelist: [];
   }>(),
   Injectables,
 );
