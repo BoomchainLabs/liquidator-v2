@@ -1,6 +1,6 @@
+import type { ClientWhitelistItem } from "@gearbox-protocol/cli-utils";
 import type { GearboxState } from "@gearbox-protocol/sdk";
 import type { AccountsPlugin } from "@gearbox-protocol/sdk/plugins/accounts";
-import type { Address } from "viem";
 
 import type { OptimisticResult } from "./optimist.js";
 
@@ -8,10 +8,7 @@ export type TypedSDKState = GearboxState<{
   readonly accounts: AccountsPlugin;
 }>;
 
-export interface WhitelistEntry {
-  address: Address;
-  reason?: string;
-}
+export type WhitelistEntry = ClientWhitelistItem;
 
 export interface TrackReport {
   id: string;

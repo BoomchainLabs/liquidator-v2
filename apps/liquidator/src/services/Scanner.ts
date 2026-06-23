@@ -16,7 +16,7 @@ import type { Block } from "viem";
 import { DI } from "../di.js";
 import { type ILogger, Logger } from "../log/index.js";
 import type Client from "./Client.js";
-import { CreditAccountWhitelist } from "./CreditAccountWhitelist.js";
+import type { CreditAccountWhitelist } from "./CreditAccountWhitelist.js";
 import type DeleverageService from "./DeleverageService.js";
 import type { ILiquidatorService } from "./liquidate/index.js";
 import { ZeroHFAccountsNotification } from "./notifier/ZeroHFAccountsNotification.js";
@@ -44,24 +44,19 @@ export class Scanner {
   @DI.Inject(DI.Notifier)
   notifier!: INotificationService;
 
+  @DI.Inject(DI.Whitelist)
+  whitelist!: CreditAccountWhitelist;
+
   #lastUpdated = 0n;
   #maxHealthFactor = MAX_UINT256;
   #minHealthFactor = 0n;
   #unwatch?: () => void;
   #liquidatableAccounts = 0;
-  #whitelist?: CreditAccountWhitelist;
 
   public async launch(): Promise<void> {
     await this.liquidatorService.launch();
 
-    if (!this.config.optimistic && this.config.whitelistUrl) {
-      this.#whitelist = new CreditAccountWhitelist({
-        url: this.config.whitelistUrl,
-        network: this.config.network,
-        logger: this.log,
-      });
-      await this.#whitelist.start();
-    }
+    await this.whitelist.start();
 
     const block = await this.client.pub.getBlock();
 
@@ -179,28 +174,26 @@ export class Scanner {
         accounts = await this.#getExpiredCreditAccounts(blockNumber);
       }
     }
-    if (this.#whitelist) {
-      const whitelist = this.#whitelist;
-      const before = accounts.length;
-      accounts = accounts.filter(ca => {
-        const item = whitelist.match(ca);
-        if (item) {
-          this.log.warn(
-            {
-              creditAccount: ca.creditAccount,
-              creditManager: ca.creditManager,
-              reason: item.reason,
-              expiresAt: item.expiresAt,
-            },
-            `ignoring whitelisted account ${ca.creditAccount}`,
-          );
-        }
-        return !item;
-      });
-      this.log.debug(
-        `filtered out ${before - accounts.length} whitelisted accounts`,
-      );
-    }
+
+    const before = accounts.length;
+    accounts = accounts.filter(ca => {
+      const item = this.whitelist.match(ca, "hard");
+      if (item) {
+        this.log.warn(
+          {
+            creditAccount: ca.creditAccount,
+            creditManager: ca.creditManager,
+            reason: item.reason,
+            expiresAt: item.expiresAt,
+          },
+          `ignoring hard-whitelisted account ${ca.creditAccount}`,
+        );
+      }
+      return !item;
+    });
+    this.log.debug(
+      `filtered out ${before - accounts.length} hard-whitelisted accounts`,
+    );
 
     if (this.config.liquidationMode === "deleverage") {
       accounts = await this.deleverage.filterDeleverageAccounts(
@@ -246,7 +239,7 @@ export class Scanner {
 
       if (zeroHFAccs.length > 0) {
         accounts = accounts.filter(ca => ca.healthFactor !== 0n);
-        zeroHFAccs = zeroHFAccs.filter(ca => !this.#whitelist?.match(ca));
+        zeroHFAccs = zeroHFAccs.filter(ca => !this.whitelist.match(ca, "hard"));
       }
 
       if (zeroHFAccs.length > 0) {
@@ -318,7 +311,7 @@ export class Scanner {
           },
           blockNumber,
         );
-        result = result.filter(ca => !this.#whitelist?.match(ca));
+        result = result.filter(ca => !this.whitelist.match(ca, "hard"));
         if (result.length > 0) {
           break;
         }
@@ -347,7 +340,7 @@ export class Scanner {
 
   public async stop(): Promise<void> {
     this.#unwatch?.();
-    this.#whitelist?.stop();
+    this.whitelist.stop();
     this.log.info("stopped");
   }
 }

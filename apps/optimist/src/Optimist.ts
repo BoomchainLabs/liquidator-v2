@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 
 import type { S3ClientConfig } from "@aws-sdk/client-s3";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { clientWhitelistItemSchema } from "@gearbox-protocol/cli-utils";
 import type {
   ExecutionReport,
   TrackReport,
@@ -17,7 +18,7 @@ import {
 import axios, { isAxiosError } from "axios";
 import parseDuration from "parse-duration";
 import type { Logger as ILogger } from "pino";
-import type { Address } from "viem";
+import { z } from "zod/v4";
 import { ExecutionAnalyzer, getSummary } from "./analysis";
 import type { Config } from "./config";
 import type { TaskCallback } from "./config/schema";
@@ -241,12 +242,8 @@ export default class Optimist {
     }
     const endpoint = `${anvilManagerApiURL}/whitelist/liquidator/${network}`;
     try {
-      const resp =
-        await axios.get<Array<{ address: Address; reason: string }>>(endpoint);
-      const result = resp.data.map(v => ({
-        address: v.address.toLowerCase() as Address,
-        reason: v.reason,
-      }));
+      const resp = await axios.get(endpoint);
+      const result = z.array(clientWhitelistItemSchema).parse(resp.data);
       this.logger.info(
         `loaded ${result.length} whitelist entries for ${network}`,
       );

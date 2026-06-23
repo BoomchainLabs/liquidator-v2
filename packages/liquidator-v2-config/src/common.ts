@@ -2,6 +2,7 @@ import {
   addressLike,
   boolLike,
   CensoredString,
+  clientWhitelistItemSchema,
   optionalAddressArrayLike,
   ProvidersSchema,
   stringArrayLike,
@@ -65,9 +66,14 @@ export const CommonSchema = z.object({
   whitelistUrl: z.url().optional().register(zommandRegistry, {
     flags: "--whitelist-url <url>",
     description:
-      "Full URL of the liquidator whitelist endpoint. Entries are credit account or credit manager addresses. Only applied in non-optimistic mode.",
+      "Full URL of the liquidator soft whitelist endpoint. Entries are credit account or credit manager addresses. Does not prevent liquidation, but annotates failure notifications. Only applied in non-optimistic mode.",
     env: "WHITELIST_URL",
   }),
+  /**
+   * Static (hard) whitelist that prevents liquidation entirely.
+   * Entries can be credit account, credit manager or token addresses.
+   */
+  hardWhitelist: z.array(clientWhitelistItemSchema).optional(),
   /**
    * Only check this account during local debug session
    */

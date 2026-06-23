@@ -2,6 +2,7 @@
 import "./errors/index.js";
 import "./services/Client.js";
 import "./services/HealthCheckerService.js";
+import "./services/WhitelistFactory.js";
 import "./services/Scanner.js";
 import "./services/DeleverageService.js";
 import "./services/liquidate/index.js";
