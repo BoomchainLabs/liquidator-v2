@@ -52,7 +52,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/liquidator-contracts
       '@gearbox-protocol/sdk':
-        specifier: 14.11.3
+        specifier: ^14.11.3
         version: 14.11.3(axios@1.18.0)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.53.1(typescript@6.0.3)(zod@4.4.3)))
       '@types/node':
         specifier: ^26.0.0
@@ -91,7 +91,7 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       viem:
-        specifier: 2.53.1
+        specifier: ^2.53.1
         version: 2.53.1(typescript@6.0.3)(zod@4.4.3)
       vitest:
         specifier: ^4.1.9
@@ -197,7 +197,7 @@ importers:
         specifier: ^14.0.1
         version: 14.0.1
       viem:
-        specifier: 2.53.1
+        specifier: ^2.53.1
         version: 2.53.1(typescript@6.0.3)(zod@4.4.3)
       vitest:
         specifier: ^4.1.9
@@ -223,6 +223,9 @@ importers:
       '@commander-js/extra-typings':
         specifier: ^15.0.0
         version: 15.0.0(commander@15.0.0)
+      '@gearbox-protocol/sdk':
+        specifier: ^14.11.3
+        version: 14.11.3(axios@1.18.0)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.53.1(typescript@6.0.3)(zod@4.4.3)))
       '@vlad-yakovlev/telegram-md':
         specifier: ^2.1.0
         version: 2.1.0
@@ -241,6 +244,9 @@ importers:
       p-queue:
         specifier: ^9.1.2
         version: 9.3.0
+      viem:
+        specifier: ^2.53.1
+        version: 2.53.1(typescript@6.0.3)(zod@4.4.3)
       yaml:
         specifier: ^2.8.3
         version: 2.9.0
@@ -248,9 +254,6 @@ importers:
         specifier: ^4.3.6
         version: 4.4.3
     devDependencies:
-      '@gearbox-protocol/sdk':
-        specifier: ^14.11.3
-        version: 14.11.3(axios@1.18.0)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.53.1(typescript@6.0.3)(zod@4.4.3)))
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -263,9 +266,6 @@ importers:
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
-      viem:
-        specifier: 2.53.1
-        version: 2.53.1(typescript@6.0.3)(zod@4.4.3)
       vitest:
         specifier: ^4.1.9
         version: 4.1.9(@types/node@26.0.0)(vite@8.0.16(@types/node@26.0.0)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.22.4)(yaml@2.9.0))
@@ -288,7 +288,7 @@ importers:
         specifier: ^6.0.3
         version: 6.0.3
       viem:
-        specifier: 2.53.1
+        specifier: ^2.53.1
         version: 2.53.1(typescript@6.0.3)(zod@4.4.3)
 
   packages/liquidator-v2-config:
@@ -297,11 +297,11 @@ importers:
         specifier: workspace:*
         version: link:../cli-utils
       '@gearbox-protocol/sdk':
-        specifier: '>=14.10.1'
-        version: 14.11.3(axios@1.18.0)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.52.2(typescript@6.0.3)(zod@4.4.3)))
+        specifier: ^14.11.3
+        version: 14.11.3(axios@1.18.0)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.53.1(typescript@6.0.3)(zod@4.4.3)))
       viem:
-        specifier: 2.52.2
-        version: 2.52.2(typescript@6.0.3)(zod@4.4.3)
+        specifier: ^2.53.1
+        version: 2.53.1(typescript@6.0.3)(zod@4.4.3)
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -2849,14 +2849,6 @@ packages:
     peerDependencies:
       viem: ^2.21.18
 
-  viem@2.52.2:
-    resolution: {integrity: sha512-HSU12p5aD/kAPZfrlbCUqdiP4P/c6hQ9AhfTS51VbLUQIjkWd1d5EjrCx/SCxZ0zhZVRn4Iv5X5WDqXPG8Ubew==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
   viem@2.53.1:
     resolution: {integrity: sha512-FhfJ/SW73CVosiyVLmIMVgKDRKYV1AGCLzZoHYvmNayyVff63Qi1ocPCk59LqC/cNw244RbBJjHnmxqXkE7NpA==}
     peerDependencies:
@@ -3963,28 +3955,6 @@ snapshots:
       '@biomejs/biome': 2.5.0
 
   '@gearbox-protocol/integrations-v3@1.54.2': {}
-
-  '@gearbox-protocol/sdk@14.11.3(axios@1.18.0)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.52.2(typescript@6.0.3)(zod@4.4.3)))':
-    dependencies:
-      '@gearbox-protocol/integrations-v3': 1.54.2
-      '@redstone-finance/evm-connector': 0.9.0
-      '@redstone-finance/protocol': 0.9.0
-      '@redstone-finance/sdk': 0.9.0
-      '@redstone-finance/utils': 0.9.0
-      abitype: 1.2.4(typescript@6.0.3)(zod@4.4.3)
-      axios: 1.18.0
-      buffer: 6.0.3
-      date-fns: 4.4.0
-      viem: 2.53.1(typescript@6.0.3)(zod@4.4.3)
-      zod: 4.4.3
-    optionalDependencies:
-      viem-deal: 2.0.4(viem@2.52.2(typescript@6.0.3)(zod@4.4.3))
-    transitivePeerDependencies:
-      - bufferutil
-      - debug
-      - supports-color
-      - typescript
-      - utf-8-validate
 
   '@gearbox-protocol/sdk@14.11.3(axios@1.18.0)(typescript@6.0.3)(viem-deal@2.0.4(viem@2.53.1(typescript@6.0.3)(zod@4.4.3)))':
     dependencies:
@@ -5730,31 +5700,9 @@ snapshots:
 
   uuid@14.0.1: {}
 
-  viem-deal@2.0.4(viem@2.52.2(typescript@6.0.3)(zod@4.4.3)):
-    dependencies:
-      viem: 2.52.2(typescript@6.0.3)(zod@4.4.3)
-    optional: true
-
   viem-deal@2.0.4(viem@2.53.1(typescript@6.0.3)(zod@4.4.3)):
     dependencies:
       viem: 2.53.1(typescript@6.0.3)(zod@4.4.3)
-
-  viem@2.52.2(typescript@6.0.3)(zod@4.4.3):
-    dependencies:
-      '@noble/curves': 1.9.1
-      '@noble/hashes': 1.8.0
-      '@scure/bip32': 1.7.0
-      '@scure/bip39': 1.6.0
-      abitype: 1.2.3(typescript@6.0.3)(zod@4.4.3)
-      isows: 1.0.7(ws@8.20.1)
-      ox: 0.14.29(typescript@6.0.3)(zod@4.4.3)
-      ws: 8.20.1
-    optionalDependencies:
-      typescript: 6.0.3
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-      - zod
 
   viem@2.53.1(typescript@6.0.3)(zod@4.4.3):
     dependencies:

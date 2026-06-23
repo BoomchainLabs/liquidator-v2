@@ -34,15 +34,12 @@
     "typecheck:ci": "tsc --noEmit",
     "generate": "tsx ./scripts/generate.mts"
   },
-  "peerDependencies": {
-    "viem": "2.52.2"
-  },
   "devDependencies": {
     "@types/node": "^26.0.0",
     "@wagmi/cli": "^2.3.2",
     "tsup": "^8.5.1",
     "tsx": "4.22.4",
     "typescript": "^6.0.3",
-    "viem": "2.53.1"
+    "viem": "^2.53.1"
   }
 }

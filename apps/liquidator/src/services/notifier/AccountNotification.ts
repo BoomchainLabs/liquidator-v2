@@ -31,7 +31,7 @@ export default abstract class AccountNotification extends SDKConstruct {
     const creditManager = this.sdk.marketRegister.findCreditManager(
       this.ca.creditManager,
     );
-    return hexEq(mc, creditManager.marketConfigurator);
+    return hexEq(mc, creditManager.marketConfigurator.address);
   }
 
   protected get caPlain(): string {

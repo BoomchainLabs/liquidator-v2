@@ -51,10 +51,10 @@ export function humanizePreviewPartialLiquidation(
 }
 
 export function mustGetCuratorName(cm: CreditSuite): Curator {
-  const curator = getCuratorName(cm.marketConfigurator, cm.networkType);
+  const curator = getCuratorName(cm.marketConfigurator.address, cm.networkType);
   if (!curator) {
     throw new Error(
-      `unknown market configurator ${cm.marketConfigurator} on ${cm.networkType}`,
+      `unknown market configurator ${cm.marketConfigurator.address} on ${cm.networkType}`,
     );
   }
   return curator;

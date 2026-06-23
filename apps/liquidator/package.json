@@ -23,7 +23,7 @@
     "@aws-sdk/client-s3": "^3.1073.0",
     "@gearbox-protocol/cli-utils": "workspace:*",
     "@gearbox-protocol/liquidator-contracts": "workspace:*",
-    "@gearbox-protocol/sdk": "14.11.3",
+    "@gearbox-protocol/sdk": "^14.11.3",
     "@types/node": "^26.0.0",
     "@vlad-yakovlev/telegram-md": "^2.1.0",
     "abitype": "^1.2.4",
@@ -36,7 +36,7 @@
     "pino": "^10.3.1",
     "tsx": "4.22.4",
     "typescript": "^6.0.3",
-    "viem": "2.53.1",
+    "viem": "^2.53.1",
     "vitest": "^4.1.9",
     "zod": "^4.4.3"
   }
