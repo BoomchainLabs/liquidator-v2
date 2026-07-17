@@ -1,4 +1,4 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from "tsdown";
 
 export default defineConfig({
   entry: {
@@ -7,8 +7,9 @@ export default defineConfig({
   },
   outDir: "dist",
   format: ["esm"],
+  fixedExtension: false,
   dts: true,
   sourcemap: true,
   clean: true,
   target: "node24",
-}) as unknown;
+});

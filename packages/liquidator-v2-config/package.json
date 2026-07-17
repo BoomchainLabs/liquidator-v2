@@ -17,18 +17,18 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
-    "prepack": "tsup",
+    "build": "tsdown",
+    "prepack": "tsdown",
     "typecheck:ci": "tsc --noEmit"
   },
   "dependencies": {
     "@gearbox-protocol/cli-utils": "workspace:*",
-    "@gearbox-protocol/sdk": "^14.11.3",
-    "viem": "^2.53.1",
+    "@gearbox-protocol/sdk": "^14.11.10",
+    "viem": "^2.55.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "tsup": "^8.5.1",
-    "typescript": "^6.0.3"
+    "tsdown": "^0.22.9",
+    "typescript": "^7.0.2"
   }
 }
