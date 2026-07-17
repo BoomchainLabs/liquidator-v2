@@ -297,7 +297,7 @@ importers:
         specifier: workspace:*
         version: link:../cli-utils
       '@gearbox-protocol/sdk':
-        specifier: ^14.11.10
+        specifier: '>=14'
         version: 14.11.10(axios@1.18.1)(typescript@7.0.2)(viem-deal@2.0.4(viem@2.55.2(typescript@7.0.2)(zod@4.4.3)))
       viem:
         specifier: ^2.55.2
