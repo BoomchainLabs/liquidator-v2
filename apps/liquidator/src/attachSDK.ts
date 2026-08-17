@@ -83,12 +83,6 @@ export default async function attachSDK(): Promise<
       gateways: config.redstoneGateways,
       failOnMissingFeeds: config.failOnMissingFeeds,
     },
-    pyth: {
-      historicTimestamp: optimisticTimestamp
-        ? Math.floor(optimisticTimestamp / 1000)
-        : undefined,
-      failOnMissingFeeds: config.failOnMissingFeeds,
-    },
   });
   // trying to set default numSplits for router v3.1 contract
   try {

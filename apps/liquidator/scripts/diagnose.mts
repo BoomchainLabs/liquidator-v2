@@ -194,9 +194,6 @@ const program = new Zommand("diagnose", {
     await sdk.attach({
       marketConfigurators: [marketConfigurator],
       ignoreUpdateablePrices: false,
-      pyth: {
-        historicTimestamp: true,
-      },
       redstone: {
         historicTimestamp: true,
       },

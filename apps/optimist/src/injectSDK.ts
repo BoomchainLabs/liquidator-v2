@@ -57,9 +57,6 @@ export default async function injectSDK(config: Config): Promise<void> {
     redstone: {
       historicTimestamp: true,
     },
-    pyth: {
-      historicTimestamp: true,
-    },
   });
 
   DI.set(DI.SDK, sdk);

@@ -1,17 +1,103 @@
-notifications:
-  - type: telegram
-    token: "${TELEGRAM_BOT_TOKEN}"
-    alertsChannel: "${TELEGRAM_ALERTS_CHANNEL}"
-    notificationsChannel: "${TELEGRAM_NOTIFICATIONS_CHANNEL}"
-  - curator: "kpk"
-    type: telegram
-    token: "${TELEGRAM_BOT_TOKEN}"
-    alertsChannel: "${TELEGRAM_ALERTS_CHANNEL}"
-    notificationsChannel: "${TELEGRAM_NOTIFICATIONS_CHANNEL}"
-    prefix: "[KPK]"
-  - curator: "Invariant Group"
-    type: telegram
-    token: "${TELEGRAM_BOT_TOKEN}"
-    alertsChannel: "${TELEGRAM_ALERTS_CHANNEL}"
-    notificationsChannel: "${TELEGRAM_NOTIFICATIONS_CHANNEL}"
-    prefix: "[Invariant Group]"
+network: Mainnet
+liquidationMode: full
+strategy: auto
+appName: liquidator-local
+
+privateKey: "${LIQUIDATOR_PRIVATE_KEY}"
+
+enabledProviders:
+  - alchemy
+  - drpc
+  - ankr
+  - thirdweb
+
+alchemyKeys:
+  - "${ALCHEMY_KEY}"
+drpcKeys:
+  - "${DRPC_KEY}"
+ankrKeys:
+  - "${ANKR_KEY}"
+thirdwebKeys:
+  - "${THIRDWEB_KEY}"
+
+hardWhitelist:
+  - network: Mainnet
+    address: "0xc5445928816c89cf5741138d4cec91b5ec1b0f37"
+    reason: no liquidity for cp0xLRT
+    contractType: CREDIT_ACCOUNT
+    createdAt: 1751648980756
+  - network: Mainnet
+    address: "0x3441b2eafab8403c08d061ea8e3df57f9ea19bb8"
+    reason: no liquidity for cp0xlrt
+    contractType: CREDIT_ACCOUNT
+    createdAt: 1753707133831
+  - network: Mainnet
+    address: "0x75c4ce8c0cb78ef67383f06accefc7f3bf9daadd"
+    reason: cp0xLRT
+    contractType: CREDIT_ACCOUNT
+    createdAt: 1763040226393
+  - network: Mainnet
+    address: "0x4189a18caa74f2c294140a03a46126188544e9ad"
+    reason: no cp0x liquidity
+    contractType: CREDIT_ACCOUNT
+    createdAt: 1763723963923
+  - network: Mainnet
+    address: "0x12b004719fb632f1e7c010c6f5d6009fb4258442"
+    reason: delayed redemption only
+    createdAt: 1776929967833
+  - network: Mainnet
+    address: "0xc71219dca5a671aa6268ab8fb35e570bd72f372b"
+    reason: wdiusd is a phantom token
+    contractType: PHANTOM_TOKEN::INFINIFI_UNWIND
+    createdAt: 1778056080011
+  - network: Mainnet
+    address: "0xb48527a128373f765a886546a12913e1b0caacd0"
+    reason: deth liquidity dead after rseth hack
+    contractType: CREDIT_ACCOUNT
+    createdAt: 1778581350476
+  - network: Mainnet
+    address: "0x4956b52ae2ff65d74ca2d61207523288e4528f96"
+    reason: Accounts with RLP token cannot be liquidated
+    createdAt: 1779716470618
+  - network: Mainnet
+    address: "0x43dff9462eb71612238e251bbc789744a0262e7a"
+    reason: pmusd depegged
+    contractType: CREDIT_ACCOUNT
+    createdAt: 1779795704616
+  - network: Mainnet
+    address: "0x0f23285bc61c93a7678da690acbaa6d234bc9c00"
+    reason: RLP Account
+    contractType: CREDIT_ACCOUNT
+    createdAt: 1781172154238
+  - network: Mainnet
+    address: "0x5e770ed409082157997d5bc34a18837880afb3d0"
+    reason: Accout with RLP
+    contractType: CREDIT_ACCOUNT
+    createdAt: 1781172215899
+  - network: Mainnet
+    address: "0x5ff6006a8b85ce781f9cd2597a6c520d5bfa0525"
+    reason: Accout with RLP
+    contractType: CREDIT_ACCOUNT
+    createdAt: 1781172215899
+  - network: Mainnet
+    address: "0xda06ee2dacf9245aa80072a4407debdea0d7e341"
+    reason: no instant liquidity
+    createdAt: 1781600073519
+
+notifications: []
+  # - type: telegram
+  #   token: "${TELEGRAM_BOT_TOKEN}"
+  #   alertsChannel: "${TELEGRAM_ALERTS_CHANNEL}"
+  #   notificationsChannel: "${TELEGRAM_NOTIFICATIONS_CHANNEL}"
+  # - curator: "kpk"
+  #   type: telegram
+  #   token: "${TELEGRAM_BOT_TOKEN}"
+  #   alertsChannel: "${TELEGRAM_ALERTS_CHANNEL}"
+  #   notificationsChannel: "${TELEGRAM_NOTIFICATIONS_CHANNEL}"
+  #   prefix: "[KPK]"
+  # - curator: "Invariant Group"
+  #   type: telegram
+  #   token: "${TELEGRAM_BOT_TOKEN}"
+  #   alertsChannel: "${TELEGRAM_ALERTS_CHANNEL}"
+  #   notificationsChannel: "${TELEGRAM_NOTIFICATIONS_CHANNEL}"
+  #   prefix: "[Invariant Group]"
